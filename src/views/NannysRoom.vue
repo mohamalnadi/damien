@@ -419,7 +419,6 @@
 <script setup>
 import ConfirmDialog from '@/components/util/ConfirmDialog'
 import EditServiceAnnouncement from '@/components/admin/EditServiceAnnouncement'
-// import ListManagementSession from '@/mixins/ListManagementSession'
 import SortableTableHeader from '@/components/util/SortableTableHeader'
 import {alertScreenReader, putFocusNextTick} from '@/lib/utils'
 import {get} from 'lodash'
@@ -428,6 +427,7 @@ import {mdiPlusThick} from '@mdi/js'
 import {onMounted, ref} from 'vue'
 import {useContextStore} from '@/stores/context'
 import {useTheme} from 'vuetify'
+import {useListManagementStore} from '@/stores/list-management-session'
 
 const contextStore = useContextStore()
 
@@ -465,7 +465,7 @@ const theme = useTheme()
 onMounted(() => {
   useContextStore().loadingStart()
   resetNewInstructor()
-  this.init().then(() => {
+  useListManagementStore().init().then(() => {
     useContextStore().loadingComplete('List Management')
     putFocusNextTick('page-title')
   })
@@ -475,45 +475,45 @@ onMounted(() => {
 })
 
 const afterDelete = deletedItem => {
-  this.setDisableControls(false)
+  useListManagementStore().setDisableControls(false)
   alertScreenReader(`Deleted ${deletedItem.description} ${deletedItem.name}.`)
 }
 
 const cancelAdd = elementId => {
   newItemName.value = ''
   resetNewInstructor()
-  this.reset()
+  useListManagementStore().reset()
   alertScreenReader('Canceled. Nothing saved.')
   putFocusNextTick(elementId)
 }
 
 const cancelDelete = () => {
   putFocusNextTick(this.itemToDelete.elementId)
-  this.reset()
+  useListManagementStore().reset()
   alertScreenReader('Canceled. Nothing deleted.')
 }
 
 const confirmDelete = () => {
-  this.setDisableControls(true)
-  this.onDelete().then(afterDelete)
+  useListManagementStore().setDisableControls(true)
+  useListManagementStore().onDelete().then(afterDelete)
 }
 
 const onClickAddDepartmentForm = () => {
-  this.setAddingDepartmentForm().then(() => {
+  useListManagementStore().setAddingDepartmentForm().then(() => {
     newItemName.value = ''
     putFocusNextTick('input-dept-form-name')
   })
 }
 
 const onClickAddEvaluationType = () => {
-  this.setAddingEvaluationType().then(() => {
+  useListManagementStore().setAddingEvaluationType().then(() => {
     newItemName.value = ''
     putFocusNextTick('input-eval-type-name')
   })
 }
 
 const onClickAddInstructor = () => {
-  this.setAddingInstructor().then(() => {
+  useListManagementStore().setAddingInstructor().then(() => {
     resetNewInstructor()
     putFocusNextTick('input-instructor-uid')
   })
@@ -521,7 +521,7 @@ const onClickAddInstructor = () => {
 
 const onSubmitAddDepartmentForm = () => {
   if (newItemName.value) {
-    this.addDepartmentForm(newItemName.value).then(() => {
+    useListManagementStore().addDepartmentForm(newItemName.value).then(() => {
       alertScreenReader(`Created department form ${newItemName.value}.`)
       newItemName.value = ''
       putFocusNextTick('add-dept-form-btn')
@@ -531,7 +531,7 @@ const onSubmitAddDepartmentForm = () => {
 
 const onSubmitAddInstructor = () => {
   if (newInstructor.value) {
-    this.addInstructor(newInstructor.value).then(() => {
+    useListManagementStore().addInstructor(newInstructor.value).then(() => {
       alertScreenReader(`Added instructor with UID ${newInstructor.value.uid}.`)
       resetNewInstructor()
       putFocusNextTick('add-instructor-btn')
@@ -541,7 +541,7 @@ const onSubmitAddInstructor = () => {
 
 const onSubmitAddEvaluationType = () => {
   if (newItemName.value) {
-    this.addEvaluationType(newItemName.value).then(() => {
+    useListManagementStore().addEvaluationType(newItemName.value).then(() => {
       alertScreenReader(`Created evaluation type ${newItemName.value}.`)
       newItemName.value = ''
       putFocusNextTick('add-eval-type-btn')
