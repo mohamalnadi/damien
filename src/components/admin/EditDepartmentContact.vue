@@ -31,13 +31,12 @@
           v-model="email"
           class="mt-1"
           density="compact"
-          hide-details
           variant="outlined"
           required
           :rules="emailRules"
         />
       </div>
-      <div class="pt-2">
+      <div class="pt-1">
         <label :for="`checkbox-communications-${contactId}`" class="form-label">
           Communications
         </label>
@@ -102,6 +101,7 @@
           auto-select-first
           autocomplete="off"
           chips
+          class="mt-2"
           closable-chips
           color="primary"
           density="comfortable"

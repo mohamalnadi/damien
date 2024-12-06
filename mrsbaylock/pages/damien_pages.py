@@ -154,11 +154,11 @@ class DamienPages(Page):
 
     @staticmethod
     def notif_expand_dept_xpath(dept):
-        return f'//button[@id, "notification-recipients-dept-{dept.dept_id}"]'
+        return f'//button[@id="notification-recipients-dept-{dept.dept_id}"]'
 
     def notif_expand_dept_recipient_members(self, dept):
         app.logger.info(f'Expanding notification department {dept.name}')
-        if self.element((By.XPATH, DamienPages.notif_expand_dept_xpath(dept))).get_attribute('aria-expanded'):
+        if self.element((By.XPATH, DamienPages.notif_expand_dept_xpath(dept))).get_attribute('aria-expanded') is True:
             app.logger.info('Recipient list is already expanded')
         else:
             app.logger.info('Expanding recipient list')
@@ -171,7 +171,7 @@ class DamienPages(Page):
 
     @staticmethod
     def notif_dept_recipient_remove_btn(dept, user):
-        xpath = f'/following-sibling::div//div[@id, "notification-recipient-{dept.dept_id}-{user.uid}")]/button'
+        xpath = f'/following-sibling::div//div[@id="notification-recipient-{dept.dept_id}-{user.uid}"]/button'
         return By.XPATH, f'{DamienPages.notif_expand_dept_xpath(dept)}{xpath}'
 
     def notif_remove_recipient(self, dept, user):

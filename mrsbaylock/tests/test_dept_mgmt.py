@@ -88,9 +88,8 @@ class TestDeptMgmt:
         self.dept_details_admin_page.select_term(previous_term)
         self.dept_details_admin_page.wait_for_eval_rows()
         self.dept_details_admin_page.wait_for_note()
-        disabled = self.dept_details_admin_page.element(DeptDetailsAdminPage.DEPT_NOTE_EDIT_BUTTON).get_attribute(
-            'disabled')
-        assert disabled == 'true'
+        assert not self.dept_details_admin_page.is_present(DeptDetailsAdminPage.DEPT_NOTE_EDIT_BUTTON)
+        assert not self.dept_details_admin_page.is_present(DeptDetailsAdminPage.DEPT_NOTE_DELETE_BUTTON)
 
     # CONTACTS
 

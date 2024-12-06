@@ -58,14 +58,18 @@ class DeptDetailsAdminPage(CourseDashboardEditsPage):
     CONTACT_REPORTS_RADIO = (By.XPATH, '//input[contains(@id, "radio-reports-only-")]/..')
     CONTACT_RESPONSES_RADIO = (By.XPATH, '//input[contains(@id, "radio-response-rates-")]/..')
     ADD_CONTACT_DEPT_FORM_SELECT = (By.XPATH, '//label[text()=" Department Forms "]/following-sibling::div//div[@class="v-input__control"]')
-    ADD_CONTACT_DEPT_FORM_INPUT = (By.ID, 'select-deptForms-add-contact')
     ADD_CONTACT_DEPT_FORM_OPTION = (By.XPATH, '//div[@role="option"]')
     ADD_CONTACT_SAVE_BUTTON = (By.ID, 'save-dept-contact-add-contact-btn')
     ADD_CONTACT_CANCEL_BUTTON = (By.ID, 'cancel-dept-contact-add-contact-btn')
 
     @staticmethod
+    def dept_contact_form_input(user=None):
+        user_id = user.user_id if user else 'add-contact'
+        return By.ID, f'select-deptForms-{user_id}'
+
+    @staticmethod
     def dept_contact_form_option(form):
-        return By.XPATH, f'//div[@class="v-list-item-title" and text()="{form}"]'
+        return By.XPATH, f'//div[@class="v-list-item-title"]//span[text()="{form}"]'
 
     @staticmethod
     def dept_contact_form_remove_button(form):
@@ -86,14 +90,14 @@ class DeptDetailsAdminPage(CourseDashboardEditsPage):
         if user:
             self.wait_for_element_and_click(DeptDetailsAdminPage.dept_contact_form_edit_input(user))
         Wait(self.driver, utils.get_short_timeout()).until(
-            ec.presence_of_element_located(DeptDetailsAdminPage.ADD_CONTACT_DEPT_FORM_INPUT),
+            ec.presence_of_element_located(DeptDetailsAdminPage.dept_contact_form_input(user)),
         )
         self.wait_for_page_and_click(DeptDetailsAdminPage.ADD_CONTACT_DEPT_FORM_SELECT)
-        self.remove_chars(DeptDetailsAdminPage.ADD_CONTACT_DEPT_FORM_INPUT)
+        self.remove_chars(DeptDetailsAdminPage.dept_contact_form_input(user))
 
-    def enter_and_select_dept_form(self, form):
+    def enter_and_select_dept_form(self, form, user=None):
         self.wait_for_element_and_click(DeptDetailsAdminPage.ADD_CONTACT_DEPT_FORM_SELECT)
-        self.enter_chars(DeptDetailsAdminPage.ADD_CONTACT_DEPT_FORM_INPUT, form)
+        self.enter_chars(DeptDetailsAdminPage.dept_contact_form_input(user), form)
         self.wait_for_element_and_click(DeptDetailsAdminPage.dept_contact_form_option(form))
         Wait(self.driver, utils.get_short_timeout()).until(
             ec.presence_of_element_located(DeptDetailsAdminPage.dept_contact_form_remove_button(form)),
@@ -104,7 +108,7 @@ class DeptDetailsAdminPage(CourseDashboardEditsPage):
             el.click()
             time.sleep(1)
         for form in dept_forms:
-            self.enter_and_select_dept_form(form)
+            self.enter_and_select_dept_form(form, user)
 
     def remove_dept_forms(self, dept_forms):
         for form in dept_forms:
@@ -184,7 +188,7 @@ class DeptDetailsAdminPage(CourseDashboardEditsPage):
         self.click_edit_contact(user)
         self.enter_dept_contact_email_edit(user, user.email)
         self.enter_user_flags(user, dept)
-        self.select_dept_forms(user.dept_forms)
+        self.select_dept_forms(user.dept_forms, user)
         self.hit_escape()
         self.wait_for_element_and_click(DeptDetailsAdminPage.dept_contact_save_edit_button(user))
         time.sleep(2)

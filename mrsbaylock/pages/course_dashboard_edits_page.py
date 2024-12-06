@@ -79,7 +79,7 @@ class CourseDashboardEditsPage(CourseDashboards):
 
     def dept_contact_comms_perms(self, user):
         return self.element(
-            (By.XPATH, f'{self.dept_contact_xpath(user)}//div[@id="dept-contact-{user.user_id}-notifications"]')).text.strip()
+            (By.XPATH, f'//div[@id="dept-contact-{user.user_id}-notifications"]')).text.strip()
 
     def dept_contact_blue_perms(self, user):
         return self.element(
