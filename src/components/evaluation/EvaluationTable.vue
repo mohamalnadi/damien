@@ -8,12 +8,12 @@
         <v-text-field
           id="evaluation-search-input"
           v-model="searchFilter"
-          :append-inner-icon="mdiMagnify"
           aria-label="Filter evaluations table by search terms."
           class="evaluation-search-input mr-3"
+          clearable
           color="tertiary"
           hide-details
-          label="Find"
+          label="Filter courses"
           max-width="600px"
           type="search"
         />
@@ -485,7 +485,10 @@
         </TransitionGroup>
         <tr v-if="isEmpty(items)">
           <td :colspan="size(evaluationHeaders)">
-            <div class="d-flex justify-center">No data to display.</div>
+            <div id="no-courses-found" class="d-flex font-weight-medium font-size-16 justify-center pa-5">
+              <v-icon class="mr-1" color="error" :icon="mdiAlert" />
+              {{ searchFilter ? 'No courses match your filter.' : 'No courses found.' }}
+            </div>
           </td>
         </tr>
       </template>
@@ -564,12 +567,12 @@ import EvaluationError from '@/components/evaluation/EvaluationError'
 import PersonLookup from '@/components/admin/PersonLookup'
 import ProgressButton from '@/components/util/ProgressButton.vue'
 import SortableTableHeader from '@/components/util/SortableTableHeader'
-import {EVALUATION_STATUSES, useDepartmentStore} from '@/stores/department/department-edit-session'
 import {addInstructor} from '@/api/instructor'
 import {alertScreenReader, oxfordJoin, pluralize, putFocusNextTick, toFormatFromJsDate, toLocaleFromISO} from '@/lib/utils'
 import {clone, cloneDeep, each, filter, find, get, includes, isEmpty, keys, map, pickBy, size, some} from 'lodash'
 import {computed, nextTick, onMounted, ref, watch} from 'vue'
-import {mdiAlertCircle, mdiCheckCircle, mdiMagnify, mdiPlusCircle} from '@mdi/js'
+import {EVALUATION_STATUSES, useDepartmentStore} from '@/stores/department/department-edit-session'
+import {mdiAlert, mdiAlertCircle, mdiCheckCircle, mdiPlusCircle} from '@mdi/js'
 import {storeToRefs} from 'pinia'
 import {useContextStore} from '@/stores/context'
 import {validateMarkAsDone} from '@/stores/department/utils'
@@ -584,7 +587,6 @@ const props = defineProps({
 const contextStore = useContextStore()
 const departmentStore = useDepartmentStore()
 const {disableControls, errorDialog, errorDialogText, evaluations, selectedEvaluationIds} = storeToRefs(departmentStore)
-
 const departmentForms = ref([])
 const editRowId = ref(undefined)
 const evaluationHeaders = ref([])
