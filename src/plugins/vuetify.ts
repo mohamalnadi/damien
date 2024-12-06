@@ -133,7 +133,7 @@ export default createVuetify({
           anchor: '#F04A00',
           background: '#0D202C',
           disabled: '#BBCAD4',
-          error: '#9A0007',
+          error: '#EF4343',
           'evaluation-row-confirmed': '#082231',
           'evaluation-row-ignore': '#2D2D2D',
           'evaluation-row-review': '#0E1F0E',
