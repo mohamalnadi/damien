@@ -139,6 +139,9 @@
   text-overflow: ellipsis;
   white-space: nowrap;
 }
+.vertical-align-top {
+  vertical-align: top !important;
+}
 .v-btn-toggle > .v-btn.v-btn--active:not(.v-btn--disabled) > .v-btn__overlay {
   opacity: 0 !important;
 }

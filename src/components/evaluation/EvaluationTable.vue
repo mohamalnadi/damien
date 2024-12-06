@@ -126,9 +126,9 @@
       :headers="evaluationHeaders"
       hide-default-footer
       :items="visibleEvaluations"
+      items-per-page="-1"
       :loading="contextStore.loading"
       must-sort
-      items-per-page="-1"
       :search="searchFilter"
       :sort-by="sortBy"
       @update:sort-by="onSort"
