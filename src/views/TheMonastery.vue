@@ -23,6 +23,7 @@
         :headers="headers"
         hide-default-footer
         :items="departments"
+        :items-per-page="-1"
         must-sort
         @mouseleave="() => hoveredDept = null"
         @focusout="() => hoveredDept = null"
@@ -38,7 +39,7 @@
             >
               <th
                 :id="`department-${deptIndex}-name`"
-                class="dept-name pl-6"
+                class="dept-name pa-3"
                 :class="{'bg-hovered': hoveredDept === department.id}"
                 rowspan="1"
                 scope="row"
@@ -50,7 +51,7 @@
               </th>
               <td
                 :id="`department-${deptIndex}-courses`"
-                class="dept-courses"
+                class="dept-courses pt-3"
                 :class="{'bg-hovered': hoveredDept === department.id}"
                 rowspan="1"
               >
@@ -68,7 +69,7 @@
               <th
                 v-if="contactIndex === 0"
                 :id="`department-${deptIndex}-name`"
-                class="dept-name pl-6"
+                class="dept-name pt-3 vertical-align-top"
                 :class="{'bg-hovered': hoveredDept === department.id}"
                 :rowspan="department.contacts.length"
                 scope="row"
@@ -81,7 +82,7 @@
               <td
                 v-if="contactIndex === 0"
                 :id="`department-${deptIndex}-courses`"
-                class="dept-courses"
+                class="dept-courses pt-3 vertical-align-top"
                 :class="{'bg-hovered': hoveredDept === department.id}"
                 :rowspan="department.contacts.length"
               >
@@ -89,21 +90,73 @@
               </td>
               <td
                 :id="`department-${deptIndex}-contact-${contactIndex}-name`"
+                class="vertical-align-top"
                 :class="subRowClass(contactIndex, department.contacts)"
               >
-                {{ contact.firstName }} {{ contact.lastName }}
+                <div
+                  :class="{
+                    'pt-3': contactIndex === 0,
+                    'pb-3': contactIndex === department.contacts.length - 1
+                  }"
+                >
+                  {{ contact.firstName }} {{ contact.lastName }}
+                </div>
               </td>
-              <td :id="`department-${deptIndex}-contact-${contactIndex}-uid`" :class="subRowClass(contactIndex, department.contacts)">{{ contact.uid }}</td>
-              <td :id="`department-${deptIndex}-contact-${contactIndex}-email`" :class="subRowClass(contactIndex, department.contacts)">{{ contact.email }}</td>
-              <td :id="`department-${deptIndex}-contact-${contactIndex}-comms`" :class="subRowClass(contactIndex, department.contacts)">
-                <span class="sr-only">{{ `${contact.canReceiveCommunications ? 'Receives' : 'Does not receive'} notifications` }}</span>
-                <BooleanIcon class="pr-1" :model="contact.canReceiveCommunications" />
+              <td
+                :id="`department-${deptIndex}-contact-${contactIndex}-uid`"
+                class="vertical-align-top"
+                :class="subRowClass(contactIndex, department.contacts)"
+              >
+                <div
+                  :class="{
+                    'pt-3': contactIndex === 0,
+                    'pb-3': contactIndex === department.contacts.length - 1
+                  }"
+                >
+                  {{ contact.uid }}
+                </div>
+              </td>
+              <td
+                :id="`department-${deptIndex}-contact-${contactIndex}-email`"
+                class="vertical-align-top"
+                :class="subRowClass(contactIndex, department.contacts)"
+              >
+                <div
+                  :class="{
+                    'pt-3': contactIndex === 0,
+                    'pb-3': contactIndex === department.contacts.length - 1
+                  }"
+                >
+                  {{ contact.email }}
+                </div>
+              </td>
+              <td
+                :id="`department-${deptIndex}-contact-${contactIndex}-comms`"
+                class="vertical-align-top"
+                :class="subRowClass(contactIndex, department.contacts)"
+              >
+                <div
+                  :class="{
+                    'pt-3': contactIndex === 0,
+                    'pb-3': contactIndex === department.contacts.length - 1
+                  }"
+                >
+                  <span class="sr-only">{{ `${contact.canReceiveCommunications ? 'Receives' : 'Does not receive'} notifications` }}</span>
+                  <BooleanIcon class="pr-1" :model="contact.canReceiveCommunications" />
+                </div>
               </td>
               <td
                 :id="`department-${deptIndex}-contact-${contactIndex}-blue`"
+                class="vertical-align-top"
                 :class="subRowClass(contactIndex, department.contacts)"
               >
-                <div class="font-italic d-flex flex-row-reverse justify-end">
+                <div
+                  class="font-italic d-flex flex-row-reverse justify-end"
+                  :class="{
+                    'pt-3': contactIndex === 0,
+                    'pb-3': contactIndex === department.contacts.length - 1
+                  }"
+                >
                   <span v-if="!contact.canViewReports" class="sr-only">No Blue access</span>
                   <span v-if="contact.canViewReports" class="text-condensed">
                     {{ `Reports ${contact.canViewResponseRates ? 'and response rates ' : ''}` }}
@@ -134,13 +187,13 @@ const contextStore = useContextStore()
 const {config} = storeToRefs(contextStore)
 const departments = ref([])
 const headers = [
-  {class: 'text-no-wrap', sortable: true, title: 'Department', value: 'deptName'},
-  {class: 'text-no-wrap', sortable: false, title: 'Courses'},
-  {class: 'text-no-wrap', minWidth: '200px !important', sortable: false, title: 'Contacts'},
-  {class: 'text-no-wrap', sortable: false, title: 'UID'},
-  {class: 'text-no-wrap', sortable: false, title: 'Email Address'},
-  {sortable: false, title: 'Receives Notifications'},
-  {class: 'text-no-wrap', minWidth: '180px !important', sortable: false, title: 'Blue Access'},
+  {class: 'text-no-wrap', sortable: true, title: 'Department', value: 'deptName', width: 100},
+  {class: 'text-no-wrap', sortable: false, title: 'Courses', width: 10},
+  {class: 'text-no-wrap', sortable: false, title: 'Contacts', width: 200},
+  {class: 'text-no-wrap', sortable: false, title: 'UID', width: 10},
+  {class: 'text-no-wrap', sortable: false, title: 'Email Address', width: 20},
+  {sortable: false, title: 'Receives Notifications', width: 10},
+  {class: 'text-no-wrap', sortable: false, title: 'Blue Access', width: 190},
 ]
 const hoveredDept = ref(undefined)
 const theme = useTheme()
@@ -160,6 +213,7 @@ const subRowClass = (subIndex, subItems) => {
 
 <style scoped>
 .compact-row td {
+  padding-top: 3px;
   height: unset !important;
 }
 .compact-row:hover {

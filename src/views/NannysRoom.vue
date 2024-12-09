@@ -85,6 +85,7 @@
                   :headers="[{key: 'name', class: 'pl-3', sortable: true, title: 'Form Name', value: 'name'}]"
                   hide-default-footer
                   :items="departmentForms"
+                  :items-per-page="-1"
                   item-key="name"
                   :sort-by="sortBy.departmentForms"
                 >
@@ -187,6 +188,7 @@
                   :headers="[{key: 'name', class: 'pl-3', sortable: true, title: 'Type Name', value: 'name'}]"
                   hide-default-footer
                   :items="evaluationTypes"
+                  :items-per-page="-1"
                   item-key="name"
                   :sort-by="sortBy.evaluationTypes"
                 >
