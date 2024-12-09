@@ -28,7 +28,6 @@ import re
 import time
 
 from flask import current_app as app
-from mrsbaylock.models.evaluation_status import EvaluationStatus
 from mrsbaylock.pages.damien_pages import DamienPages
 from mrsbaylock.test_utils import utils
 from selenium.webdriver.common.by import By
@@ -45,36 +44,15 @@ class CourseDashboards(DamienPages):
     NO_SECTIONS_MGS = (By.XPATH, '//span[text()="No eligible sections to load."]')
 
     @staticmethod
-    def eval_row_xpath(evaluation, dept=None, form=None):
-        dept = f'a[contains(@href, "/department/{dept.dept_id}")]/ancestor::td/following-sibling::' if dept else ''
+    def eval_row_xpath(evaluation, dept=None, form=None, eval_type=None):
+        dept_id = dept.dept_id if dept else evaluation.dept.dept_id
+        dept_form = form or evaluation.dept_form
+        evaluation_type = eval_type or evaluation.eval_type
+        return f'//tr[starts-with(@id, "evaluation-{dept_id}-{evaluation.ccn}-{evaluation.instructor.uid}-{dept_form}-{evaluation_type}")]'
 
-        ccn = f'td[contains(@id, "courseNumber")][starts-with(., " {evaluation.ccn}")]'
-
-        if evaluation.instructor.uid:
-            uid = f'[contains(.,"{evaluation.instructor.uid}")]'
-        else:
-            if evaluation.status in [EvaluationStatus.IGNORED, EvaluationStatus.UNMARKED]:
-                uid = '[not(div)]'
-            else:
-                uid = '[contains(.,"required")]'
-
-        instr = f'following-sibling::td[contains(@id, "instructor")]{uid}'
-
-        if evaluation.dept_form:
-            form_name = f'[contains(., " {evaluation.dept_form} ")]'
-        elif form:
-            form_name = f'[contains(., " {form} ")]'
-        else:
-            if evaluation.status in [EvaluationStatus.IGNORED, EvaluationStatus.UNMARKED]:
-                form_name = '[not(text())]'
-            else:
-                form_name = '[contains(.,"required")]'
-        dept_form = f'following-sibling::td[contains(@id, "departmentForm")]{form_name}'
-        return f'//{dept}{ccn}/{instr}/{dept_form}/ancestor::tr'
-
-    def rows_of_evaluation(self, evaluation, dept=None):
-        app.logger.info(f'Checking for eval rows at XPath: {self.eval_row_xpath(evaluation, dept)}')
-        return self.elements((By.XPATH, self.eval_row_xpath(evaluation, dept)))
+    def rows_of_evaluation(self, evaluation):
+        app.logger.info(f'Checking for eval rows at XPath: {self.eval_row_xpath(evaluation)}')
+        return self.elements((By.XPATH, self.eval_row_xpath(evaluation)))
 
     @staticmethod
     def section_row(evaluation):
