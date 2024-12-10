@@ -24,7 +24,7 @@ ENHANCEMENTS, OR MODIFICATIONS.
 """
 
 import copy
-from datetime import datetime
+import datetime
 import time
 
 from flask import current_app as app
@@ -505,7 +505,7 @@ class CourseDashboardEditsPage(CourseDashboards):
 
     def save_eval_changes(self, evaluation):
         self.click_save_eval_changes(evaluation)
-        started = list(filter(lambda ev: ev.eval_start_date <= datetime.date.today(), evaluation))
+        started = evaluation.eval_start_date <= datetime.date.today()
         if started:
             self.proceed_eval_changes()
         self.when_not_present(self.EVAL_CHANGE_SAVE_BUTTON, utils.get_short_timeout())
