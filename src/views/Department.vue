@@ -15,7 +15,7 @@
         <v-col cols="12" md="6">
           <div class="border-sm h-100 pa-3">
             <v-expansion-panels v-model="contactsPanel" flat>
-              <v-expansion-panel class="panel-override">
+              <v-expansion-panel>
                 <template #default>
                   <div class="d-flex align-center flex-wrap justify-space-between">
                     <h2 class="ml-2">Department Contacts</h2>
@@ -223,11 +223,5 @@ const refresh = () => {
 }
 .w-fit-content {
   width: fit-content;
-}
-</style>
-
-<style>
-.panel-override {
-  background-color: unset !important;
 }
 </style>

@@ -1,17 +1,18 @@
 <template>
-  <div v-if="evaluations.length > 0">
+  <div v-if="evaluations.length">
     <div
-      class="bg-surface-variant elevation-2 sticky"
+      class="bg-surface-variant elevation-2 py-2 sticky"
       role="search"
     >
-      <div class="align-start d-flex flex-wrap justify-start px-5 pt-3" :class="{'pb-2': readonly}">
+      <div class="align-center d-flex flex-wrap px-5 pt-3" :class="{'pb-2': readonly}">
         <v-text-field
           id="evaluation-search-input"
           v-model="searchFilter"
           aria-label="Filter evaluations table by search terms."
-          class="evaluation-search-input mr-3"
+          class="bg-surface mr-3"
           clearable
           color="tertiary"
+          density="comfortable"
           hide-details
           label="Filter courses"
           max-width="600px"
@@ -131,7 +132,6 @@
       must-sort
       :search="searchFilter"
       :sort-by="sortBy"
-      @update:sort-by="onSort"
       @update:current-items="onChangeSearchFilter"
     >
       <template #headers="{columns, isSorted, toggleSort, getSortIcon, sortBy: _sortBy}">
@@ -486,9 +486,8 @@
         </TransitionGroup>
         <tr v-if="isEmpty(items)">
           <td :colspan="size(evaluationHeaders)">
-            <div id="no-courses-found" class="d-flex font-weight-medium font-size-16 justify-center pa-5">
-              <v-icon class="mr-1" color="error" :icon="mdiAlert" />
-              {{ searchFilter ? 'No courses match your filter.' : 'No courses found.' }}
+            <div id="no-courses-found" class="font-size-16 pa-5 text-center text-muted">
+              {{ searchFilter ? 'No courses match your filter.' : 'No courses' }}
             </div>
           </td>
         </tr>
@@ -537,7 +536,7 @@
       </v-card>
     </v-dialog>
   </div>
-  <v-container v-else class="no-eligible-sections py-8">
+  <v-container v-if="!evaluations.length" class="no-eligible-sections mt-3">
     <v-row>
       <v-col align-self="center">
         <div class="d-flex flex-column text-muted">
@@ -570,10 +569,10 @@ import ProgressButton from '@/components/util/ProgressButton.vue'
 import SortableTableHeader from '@/components/util/SortableTableHeader'
 import {addInstructor} from '@/api/instructor'
 import {alertScreenReader, oxfordJoin, pluralize, putFocusNextTick, toFormatFromJsDate, toLocaleFromISO} from '@/lib/utils'
-import {clone, cloneDeep, each, filter, find, get, includes, isEmpty, keys, map, pickBy, size, some} from 'lodash'
-import {computed, nextTick, onMounted, ref, watch} from 'vue'
+import {clone, each, filter, find, get, includes, isEmpty, keys, map, pickBy, size, some} from 'lodash'
+import {computed, onMounted, ref, watch} from 'vue'
 import {EVALUATION_STATUSES, useDepartmentStore} from '@/stores/department/department-edit-session'
-import {mdiAlert, mdiAlertCircle, mdiCheckCircle, mdiPlusCircle} from '@mdi/js'
+import {mdiAlertCircle, mdiCheckCircle, mdiPlusCircle} from '@mdi/js'
 import {storeToRefs} from 'pinia'
 import {useContextStore} from '@/stores/context'
 import {validateMarkAsDone} from '@/stores/department/utils'
@@ -842,13 +841,6 @@ const onProceedMarkAsDone = () => {
   updateEvaluation(evaluation, fields)
 }
 
-const onSort = () => {
-  nextTick(() => {
-    const selectedEvalIds = cloneDeep(selectedEvaluationIds.value)
-    departmentStore.setSelectedEvaluationIds(selectedEvalIds)
-  })
-}
-
 const rowId = (evaluation, rowIndex) => {
   const deptId = get(evaluation, 'department.id', departmentStore.department.id)
   const instructorUid = get(evaluation, 'instructor.uid', 'None')
@@ -1002,9 +994,6 @@ tr.border-top-none td {
 }
 .evaluation-row.evaluation-row-leave-active {
   position: absolute;
-}
-.evaluation-search-input {
-  max-width: 540px;
 }
 .evaluation-type {
   min-width: 145px;

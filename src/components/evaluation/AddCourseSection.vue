@@ -3,16 +3,14 @@
     <v-btn
       v-if="!isAddingSection"
       id="add-course-section-btn"
-      class="align-self-center text-capitalize mr-3"
+      class="mr-3"
       color="tertiary"
       :disabled="!allowEdits"
-      slim
+      :prepend-icon="mdiPlusThick"
+      text="Add Course Section"
       variant="text"
       @click="() => isAddingSection = true"
-    >
-      <v-icon :icon="mdiPlusThick" />
-      Add Course Section
-    </v-btn>
+    />
     <div v-if="isAddingSection" class="full-width px-4">
       <div v-if="!section">
         <v-form>
@@ -186,7 +184,6 @@ const onSubmit = courseNumber => {
 
 <style scoped>
 .add-course-section {
-  min-height: 40px;
   max-width: 300px;
 }
 .full-width {
