@@ -193,7 +193,7 @@ onMounted(() => {
       {id: 'status', title: 'Status', icon: mdiListStatus, path: '/status'},
       {id: 'publish', title: 'Publish', icon: mdiAlertCircle, path: '/publish'},
       {id: 'departments', title: 'Departments', icon: mdiAccountGroup, path: '/departments'},
-      {id: 'lists', title: 'Settings', icon: mdiPlaylistEdit, path: '/lists'}
+      {id: 'settings', title: 'Settings', icon: mdiPlaylistEdit, path: '/lists'}
     ]
   } else if (size(currentUser.departments)) {
     navItems.value = map(currentUser.departments, department => {

@@ -147,6 +147,7 @@
         <TransitionGroup v-if="size(items)">
           <template v-for="(evaluation, rowIndex) in items" :key="evaluation.id">
             <tr
+              :id="rowId(evaluation, rowIndex)"
               class="evaluation-row"
               :class="{
                 'bg-evaluation-row-confirmed': evaluation.id !== editRowId && evaluation.status === 'confirmed',
@@ -846,6 +847,14 @@ const onSort = () => {
     const selectedEvalIds = cloneDeep(selectedEvaluationIds.value)
     departmentStore.setSelectedEvaluationIds(selectedEvalIds)
   })
+}
+
+const rowId = (evaluation, rowIndex) => {
+  const deptId = get(evaluation, 'department.id', departmentStore.department.id)
+  const instructorUid = get(evaluation, 'instructor.uid', 'None')
+  const deptForm = get(evaluation, 'departmentForm.name', get(evaluation, 'defaultDepartmentForm.name', 'None'))
+  const evalType = get(evaluation, 'evaluationType.name', 'None')
+  return `evaluation-${deptId}-${evaluation.courseNumber}-${instructorUid}-${deptForm}-${evalType}-${rowIndex}`
 }
 
 const selectInstructor = instructor => {

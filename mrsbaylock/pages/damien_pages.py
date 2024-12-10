@@ -123,7 +123,7 @@ class DamienPages(Page):
 
     @staticmethod
     def add_contact_lookup_result(user):
-        return By.XPATH, f'//div[contains(@id, "person-lookup-option")]//span[contains(., "({user.uid})")]'
+        return By.XPATH, f'//div[contains(@id, "-lookup-option")]//span[contains(., "({user.uid})")]'
 
     def look_up_uid(self, uid, input_locator):
         app.logger.info(f'Looking up UID {uid}')

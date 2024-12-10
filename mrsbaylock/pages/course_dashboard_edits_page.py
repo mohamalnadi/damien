@@ -24,6 +24,7 @@ ENHANCEMENTS, OR MODIFICATIONS.
 """
 
 import copy
+from datetime import datetime
 import time
 
 from flask import current_app as app
@@ -410,9 +411,9 @@ class CourseDashboardEditsPage(CourseDashboards):
         self.wait_for_element((By.XPATH, xpath), utils.get_short_timeout())
         self.driver.execute_script('arguments[0].click();', self.element((By.XPATH, xpath)))
 
-    def click_edit_evaluation(self, evaluation, form=None):
+    def click_edit_evaluation(self, evaluation, form=None, eval_type=None):
         self.scroll_to_top()
-        app.logger.info(f'Waiting for element locator {self.eval_row_xpath(evaluation, form=form)}//button')
+        app.logger.info(f'Waiting for element locator {self.eval_row_xpath(evaluation, form=form, eval_type=eval_type)}//button')
         Wait(self.driver, utils.get_medium_timeout()).until(
             ec.presence_of_element_located(
                 (By.XPATH, f'{self.eval_row_xpath(evaluation, form=form)}//button')),
@@ -504,6 +505,9 @@ class CourseDashboardEditsPage(CourseDashboards):
 
     def save_eval_changes(self, evaluation):
         self.click_save_eval_changes(evaluation)
+        started = list(filter(lambda ev: ev.eval_start_date <= datetime.date.today(), evaluation))
+        if started:
+            self.proceed_eval_changes()
         self.when_not_present(self.EVAL_CHANGE_SAVE_BUTTON, utils.get_short_timeout())
 
     def proceed_eval_changes(self):
