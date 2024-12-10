@@ -56,7 +56,7 @@ def export_evaluations():
         else:
             raise InternalServerError('There was an error connecting to external services during publication. Please try again.')
     else:
-        app.logger.warn('About to start background thread')
+        app.logger.warning('About to start background thread')
         thread = Thread(
             target=background_generate_exports,
             daemon=True,

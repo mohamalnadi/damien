@@ -95,7 +95,7 @@ class JsonCache(Base):
             db.session.add(row)
             std_commit()
         except IntegrityError:
-            app.logger.warn(f'Conflict for department cache {term_id}/{department_id}; will attempt to return stowed JSON')
+            app.logger.warning(f'Conflict for department cache {term_id}/{department_id}; will attempt to return stowed JSON')
             return cls.fetch_department(term_id, department_id)
 
     @classmethod
@@ -105,5 +105,5 @@ class JsonCache(Base):
             db.session.add(row)
             std_commit()
         except IntegrityError:
-            app.logger.warn(f'Conflict for section cache {term_id}/{department_id}/{course_number}; will attempt to return stowed JSON')
+            app.logger.warning(f'Conflict for section cache {term_id}/{department_id}/{course_number}; will attempt to return stowed JSON')
             return cls.fetch_section(term_id, department_id, course_number)

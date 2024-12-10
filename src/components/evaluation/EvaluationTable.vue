@@ -149,11 +149,11 @@
             <tr
               class="evaluation-row"
               :class="{
-                'evaluation-row-confirmed': evaluation.id !== editRowId && evaluation.status === 'confirmed',
-                'evaluation-row-ignore text-muted': hoverId !== evaluation.id && evaluation.id !== editRowId && evaluation.status === 'ignore',
+                'bg-evaluation-row-confirmed': evaluation.id !== editRowId && evaluation.status === 'confirmed',
+                'bg-evaluation-row-ignore text-muted': hoverId !== evaluation.id && evaluation.id !== editRowId && evaluation.status === 'ignore',
                 'bg-secondary text-white border-bottom-none': evaluation.id === editRowId,
-                'evaluation-row-review': evaluation.id !== editRowId && evaluation.status === 'review',
-                'evaluation-row-xlisting': evaluation.id !== editRowId && !evaluation.status && (evaluation.crossListedWith || evaluation.roomSharedWith),
+                'bg-evaluation-row-review': evaluation.id !== editRowId && evaluation.status === 'review',
+                'bg-evaluation-row-xlisting': evaluation.id !== editRowId && !evaluation.status && (evaluation.crossListedWith || evaluation.roomSharedWith),
                 'bg-primary-contrast text-primary': [focusedEditButtonEvaluationId, hoverId].includes(evaluation.id) && !isEditing(evaluation)
               }"
               @mouseenter="() => hoverId = evaluation.id"
