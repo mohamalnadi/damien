@@ -1,5 +1,5 @@
 <template>
-  <v-expansion-panel :id="`department-contact-${contact.id}`">
+  <v-expansion-panel :id="`department-contact-${contact.id}`" class="panel-width">
     <v-expansion-panel-title :id="`department-contact-${contact.id}-btn`" class="pa-2 rounded-b-0 height-unset">
       <div :id="`dept-contact-${contact.id}-name`" class="font-weight-bold">{{ fullName }}</div>
     </v-expansion-panel-title>
@@ -204,5 +204,8 @@ const onDelete = () => {
 .edit-contact-container {
   border-radius: 0 0 4px 4px;
   border: 2px solid rgba(var(--v-border-color), var(--v-border-opacity));
+}
+.panel-width {
+  min-width: 320px;
 }
 </style>
