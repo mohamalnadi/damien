@@ -21,13 +21,14 @@
             ref="lookupCourseNumberInput"
             v-model="courseNumber"
             color="tertiary"
-            :error-messages="errorMessage"
-            maxlength="5"
-            label="Course Number"
-            :rules="[rules.courseNumber, rules.notPresent]"
             density="compact"
-            variant="outlined"
+            :error-messages="errorMessage"
+            hide-details="auto"
+            label="Course Number"
+            maxlength="5"
             required
+            :rules="[rules.courseNumber, rules.notPresent]"
+            variant="outlined"
             @keydown.enter.prevent="lookupSection"
             @keydown.esc="onCancel"
           >
@@ -43,7 +44,7 @@
               </div>
             </template>
           </v-text-field>
-          <div>
+          <div class="mt-2">
             <v-btn
               id="lookup-course-number-submit"
               class="text-capitalize mr-2"
@@ -69,22 +70,20 @@
           {{ section.instructionFormat }}
           {{ section.sectionNumber }}
         </h3>
-        <div id="add-section-course-number" class="mt-1">Course number {{ section.courseNumber }}</div>
-        <div id="add-section-course-title" class="mt-1 mb-3">{{ section.courseTitle }}</div>
+        <div id="add-section-course-number">Course number {{ section.courseNumber }}</div>
+        <div id="add-section-course-title" class="mb-2">{{ section.courseTitle }}</div>
         <div>
           <v-btn
             id="add-course-section-submit"
             class="text-capitalize mr-2 mb-1"
             color="secondary"
             :disabled="disableControls"
-            elevation="2"
             text="Confirm"
             @click="onSubmit(section.courseNumber)"
           />
           <v-btn
             id="add-course-section-cancel"
             class="text-capitalize ml-1 mb-1"
-            elevation="2"
             variant="outlined"
             text="Cancel"
             @click="onCancel"
@@ -98,13 +97,15 @@
 <script setup>
 import {alertScreenReader, putFocusNextTick} from '@/lib/utils'
 import {computed, ref, watch} from 'vue'
+import {find} from 'lodash'
 import {getSection} from '@/api/sections'
 import {mdiAlert, mdiPlusThick} from '@mdi/js'
 import {storeToRefs} from 'pinia'
 import {useContextStore} from '@/stores/context'
 import {useDepartmentStore} from '@/stores/department/department-edit-session'
 
-const {disableControls} = storeToRefs(useDepartmentStore())
+const departmentStore = useDepartmentStore()
+const {disableControls} = storeToRefs(departmentStore)
 
 defineProps({
   allowEdits: {
@@ -119,7 +120,7 @@ const isAddingSection = ref(false)
 const lookupCourseNumberInput = ref()
 const rules = {
   courseNumber: value => !value || /^\d+$/.test(value) || 'Invalid course number.',
-  notPresent: value => !find(useDepartmentStore().evaluations, {courseNumber: value}) || `Course number ${value} already present on page.`
+  notPresent: value => !find(departmentStore.evaluations, {courseNumber: value}) || `Course number ${value} already present on page.`
 }
 const section = ref(undefined)
 const sectionError = ref(false)
@@ -172,14 +173,14 @@ const onCancel = () => {
 
 const onSubmit = courseNumber => {
   alertScreenReader(`Adding section ${courseNumber}.`)
-  useDepartmentStore().addSection(courseNumber, useContextStore().selectedTermId).then(() => {
+  departmentStore.addSection(courseNumber, useContextStore().selectedTermId).then(() => {
     isAddingSection.value = false
     courseNumber.value = null
     errorMessage.value = null
     section.value = null
     alertScreenReader(`Section ${courseNumber} added.`)
-  }, error => useDepartmentStore().showErrorDialog(error.response.data.message))
-    .finally(() => useDepartmentStore().disableControls = false)
+  }, error => departmentStore.showErrorDialog(error.response.data.message))
+    .finally(() => departmentStore.disableControls = false)
 }
 </script>
 
