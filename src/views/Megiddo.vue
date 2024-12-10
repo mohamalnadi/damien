@@ -6,106 +6,100 @@
         <TermSelect :after-select="refresh" />
       </template>
     </PageHeader>
-    <div v-if="!contextStore.loading" class="align-start d-flex justify-space-between">
-      <div>
-        <div v-if="size(confirmed)">
-          Rows confirmed for publication:
-          <ul id="confirmed-list" class="pl-4">
-            <li v-for="(department, index) in confirmed" :key="index">
-              {{ department.deptName }} ({{ department.count }})
-            </li>
-          </ul>
-        </div>
-        <div v-if="size(blockers)">
-          <v-icon color="error" :icon="mdiAlertCircle" />
-          Publication is blocked by errors in departments:
-          <ul id="blocker-list" class="pl-4">
-            <li v-for="(count, deptName) in blockers" :key="deptName">
-              {{ deptName }} ({{ count }})
-            </li>
-          </ul>
-        </div>
-        <v-btn
-          id="publish-btn"
-          class="publish-btn align-self-end"
-          color="secondary"
-          :disabled="isExporting || contextStore.loading || !!size(blockers)"
-          @click="publish"
-        >
-          <span v-if="!isExporting">Publish</span>
-          <v-progress-circular
-            v-if="isExporting"
-            :indeterminate="true"
-            color="white"
-            rotate="5"
-            size="20"
-            width="3"
+    <div v-if="!contextStore.loading">
+      <div class="align-start d-flex justify-space-between">
+        <div>
+          <div v-if="size(confirmed)" class="mb-3">
+            <h2 class="text-h6">Rows confirmed for publication</h2>
+            <ul id="confirmed-list" class="pl-4">
+              <li v-for="(department, index) in confirmed" :key="index">
+                {{ department.deptName }} <span class="text-muted">({{ department.count }})</span>
+              </li>
+            </ul>
+          </div>
+          <div v-if="size(blockers)">
+            <v-icon color="error" :icon="mdiAlertCircle" />
+            Publication is blocked by errors in departments:
+            <ul id="blocker-list" class="pl-4">
+              <li v-for="(count, deptName) in blockers" :key="deptName">
+                {{ deptName }} ({{ count }})
+              </li>
+            </ul>
+          </div>
+          <ProgressButton
+            id="publish-btn"
+            :action="publish"
+            color="secondary"
+            :disabled="isExporting || !!size(blockers) || !evaluations.length"
+            :in-progress="isExporting"
+            size="large"
+            :text="isExporting ? 'Publishing...' : 'Publish'"
           />
-        </v-btn>
-        <v-slide-x-reverse-transition>
-          <span v-if="isExporting" class="mx-2">Publishing in progress.</span>
-        </v-slide-x-reverse-transition>
-        <v-btn
-          id="status-btn"
-          class="mx-2"
-          color="secondary"
-          :disabled="isUpdatingStatus || !isExporting || contextStore.loading"
-          fab
-          x-small
-          @click="onUpdateStatus"
-        >
-          <v-icon :icon="mdiRefresh" />
-          <span class="sr-only">Refresh</span>
-        </v-btn>
+          <v-btn
+            id="status-btn"
+            aria-label="Refresh"
+            class="mx-2"
+            color="secondary"
+            :disabled="isUpdatingStatus || !isExporting"
+            fab
+            :icon="mdiRefresh"
+            size="small"
+            @click="onUpdateStatus"
+          />
+        </div>
+        <div class="float-right mr-15">
+          <v-expansion-panels
+            v-model="exportsPanel"
+            class="term-exports"
+            tile
+          >
+            <v-expansion-panel class="border-sm">
+              <v-expansion-panel-title id="term-exports-btn" class="term-exports-btn text-no-wrap">
+                <h2 class="text-primary">Term Exports</h2>
+              </v-expansion-panel-title>
+              <v-expansion-panel-text v-if="isEmpty(termExports)" class="border-t-sm pt-3">
+                <div id="term-exports-no-data">
+                  There are no {{ contextStore.selectedTermName }} exports.
+                </div>
+              </v-expansion-panel-text>
+              <v-expansion-panel-text v-if="!isEmpty(termExports)">
+                <ul id="term-exports-list" class="pl-2">
+                  <li v-for="(e, index) in termExports" :key="index">
+                    <a
+                      :id="`term-export-${index}`"
+                      download
+                      :href="`${contextStore.config.apiBaseUrl}/api/export/${encodeURIComponent(e.s3Path)}`"
+                    >
+                      <v-icon
+                        aria-hidden="false"
+                        aria-label="download"
+                        class="pr-2"
+                        color="anchor"
+                        :icon="mdiTrayArrowDown"
+                        role="img"
+                        size="small"
+                      />
+                      {{ toLocaleFromISO(e.createdAt, dateFormat) }}
+                      <span class="sr-only">term export</span>
+                    </a>
+                  </li>
+                </ul>
+              </v-expansion-panel-text>
+            </v-expansion-panel>
+          </v-expansion-panels>
+        </div>
       </div>
-      <div class="float-right mr-15">
-        <v-expansion-panels
-          v-model="exportsPanel"
-          class="term-exports"
-          :disabled="contextStore.loading"
-          flat
-        >
-          <v-expansion-panel class="border-sm panel-override">
-            <v-expansion-panel-title id="term-exports-btn" class="term-exports-btn text-no-wrap">
-              <h2 class="pr-2">Term Exports</h2>
-            </v-expansion-panel-title>
-            <v-expansion-panel-text>
-              <div v-if="isEmpty(termExports)" id="term-exports-no-data">There are no {{ contextStore.selectedTermName }} exports.</div>
-              <ul v-if="!isEmpty(termExports)" id="term-exports-list" class="pl-2">
-                <li v-for="(e, index) in termExports" :key="index">
-                  <a
-                    :id="`term-export-${index}`"
-                    download
-                    :href="`${contextStore.config.apiBaseUrl}/api/export/${encodeURIComponent(e.s3Path)}`"
-                  >
-                    <v-icon
-                      aria-hidden="false"
-                      aria-label="download"
-                      class="pr-2"
-                      color="anchor"
-                      :icon="mdiTrayArrowDown"
-                      role="img"
-                      size="small"
-                    />
-                    {{ toLocaleFromISO(e.createdAt, dateFormat) }}
-                    <span class="sr-only">term export</span>
-                  </a>
-                </li>
-              </ul>
-            </v-expansion-panel-text>
-          </v-expansion-panel>
-        </v-expansion-panels>
+      <div class="mt-6">
+        <EvaluationTable :readonly="true" />
       </div>
     </div>
-    <v-card v-if="!contextStore.loading">
-      <EvaluationTable :readonly="true" />
-    </v-card>
   </div>
 </template>
 
 <script setup>
 import EvaluationTable from '@/components/evaluation/EvaluationTable'
 import PageHeader from '@/components/util/PageHeader'
+import ProgressButton from '@/components/util/ProgressButton.vue'
 import TermSelect from '@/components/util/TermSelect'
 import {DateTime} from 'luxon'
 import {alertScreenReader, putFocusNextTick, toLocaleFromISO} from '@/lib/utils'
@@ -115,8 +109,11 @@ import {mdiAlertCircle, mdiRefresh, mdiTrayArrowDown} from '@mdi/js'
 import {nextTick, onMounted, ref} from 'vue'
 import {useContextStore} from '@/stores/context'
 import {useDepartmentStore} from '@/stores/department/department-edit-session'
+import {storeToRefs} from 'pinia'
 
 const contextStore = useContextStore()
+const departmentStore = useDepartmentStore()
+const {evaluations} = storeToRefs(departmentStore)
 const blockers = ref({})
 const confirmed = ref([])
 const dateFormat = DateTime.DATETIME_SHORT_WITH_SECONDS
@@ -149,7 +146,7 @@ const refresh = () => {
     getExports(contextStore.selectedTermId),
     updateStatus()
   ]).then(responses => {
-    useDepartmentStore().setEvaluations(sortBy(responses[0], 'sortableCourseName'))
+    departmentStore.setEvaluations(sortBy(responses[0], 'sortableCourseName'))
     confirmed.value = responses[1]
     termExports.value = responses[2]
     contextStore.loadingComplete(`Publish ${contextStore.selectedTermName || ''}`)
@@ -191,9 +188,6 @@ const showStatus = termExport => {
 </script>
 
 <style scoped>
-.publish-btn {
-  width: 8rem;
-}
 .term-exports {
   min-width: 325px;
 }

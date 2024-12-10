@@ -22,8 +22,8 @@
             />
           </v-btn>
         </div>
-        <div v-if="key === 'ignore'" class="align-self-center pt-0">
-          <span class="font-size-18 text-secondary">|</span>
+        <div v-if="key === 'ignore'" class="pipe-separator text-disabled">
+          <span role="separator">|</span>
         </div>
       </div>
     </div>
@@ -425,5 +425,9 @@ const validateAndUpdate = key => {
 }
 .evaluation-unmark-btn {
   min-width: 4.65em
+}
+.pipe-separator {
+  font-size: 20px;
+  padding: 2px 2px 0 2px;
 }
 </style>
