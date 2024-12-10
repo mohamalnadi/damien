@@ -1,7 +1,7 @@
 <template>
   <v-form
     v-model="valid"
-    class="px-5 py-4"
+    class="px-3 py-4"
     :class="{'bg-surface-variant': uid && !contact}"
     lazy-validation
   >
@@ -22,7 +22,7 @@
       <h3 id="contact-sub-header">
         <span class="sr-only">Contact: </span>{{ fullName }} ({{ uid }})
       </h3>
-      <div class="pt-3">
+      <div class="mt-2">
         <label :for="`input-email-${contactId}`" class="form-label">
           Email Address
         </label>
@@ -31,12 +31,13 @@
           v-model="email"
           class="mt-1"
           density="compact"
+          hide-details="auto"
           variant="outlined"
           required
           :rules="emailRules"
         />
       </div>
-      <div class="pt-1">
+      <div class="mt-3">
         <label :for="`checkbox-communications-${contactId}`" class="form-label">
           Communications
         </label>
@@ -63,7 +64,6 @@
         </label>
         <v-radio-group
           v-model="permissions"
-          class="mt-1"
           color="tertiary"
           column
           density="comfortable"
@@ -90,7 +90,7 @@
           />
         </v-radio-group>
       </div>
-      <div class="pt-2">
+      <div class="mt-3">
         <label :for="`select-deptForms-${contactId}`" class="form-label">
           Department Forms
         </label>
@@ -101,10 +101,10 @@
           auto-select-first
           autocomplete="off"
           chips
-          class="mt-2"
+          class="mt-1"
           closable-chips
           color="primary"
-          density="comfortable"
+          density="compact"
           hide-details
           hide-selected
           item-title="name"
@@ -129,7 +129,7 @@
         </v-combobox>
       </div>
     </div>
-    <div class="pt-3">
+    <div class="mt-4">
       <ProgressButton
         :id="`save-dept-contact-${contactId}-btn`"
         :action="onSave"
@@ -287,9 +287,7 @@ const populateForm = contact => {
     if (contact.canReceiveCommunications !== undefined) {
       canReceiveCommunications.value = contact.canReceiveCommunications
     }
-    if (contact.canViewReports) {
-      permissions.value = contact.canViewResponseRates.value ? 'response_rates' : 'reports_only'
-    }
+    permissions.value = contact.canViewReports ? (contact.canViewResponseRates ? 'response_rates' : 'reports_only') : null
     putFocusNextTick('person-lookup-input')
   } else {
     csid.value = null
