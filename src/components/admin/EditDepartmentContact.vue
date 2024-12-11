@@ -31,6 +31,7 @@
           v-model="email"
           class="mt-1"
           density="compact"
+          :disabled="isSaving"
           hide-details="auto"
           variant="outlined"
           required
@@ -49,6 +50,7 @@
             class="checkbox-override rounded-sm"
             color="tertiary"
             density="compact"
+            :disabled="isSaving"
             hide-details
             role="checkbox"
             tabindex="0"
@@ -73,18 +75,21 @@
           <v-radio
             :id="`radio-no-blue-${contactId}`"
             :aria-checked="isNil(permissions)"
+            :disabled="isSaving"
             label="No access to Blue"
             :value="null"
           />
           <v-radio
             :id="`radio-reports-only-${contactId}`"
             :aria-checked="permissions === 'reports_only'"
+            :disabled="isSaving"
             label="View reports"
             value="reports_only"
           />
           <v-radio
             :id="`radio-response-rates-${contactId}`"
             :aria-checked="permissions === 'response_rates'"
+            :disabled="isSaving"
             label="View reports and response rates"
             value="response_rates"
           />
@@ -98,19 +103,19 @@
           :id="`select-deptForms-${contactId}`"
           v-model="contactDepartmentForms"
           aria-label="Department Forms"
-          auto-select-first
           autocomplete="off"
           chips
           class="mt-1"
           closable-chips
           color="primary"
           density="compact"
+          :disabled="isSaving"
           hide-details
           hide-selected
           item-title="name"
           item-value="id"
           :items="availableDepartmentForms"
-          :menu-props="{closeOnClick: true, closeOnContentClick: true}"
+          :menu-props="{closeOnContentClick: true}"
           multiple
           return-object
           variant="outlined"
@@ -118,12 +123,14 @@
         >
           <template #chip="{item}">
             <v-chip
-              :id="`selected-deptForm-${item.raw.id}-${contactId}`"
-              :key="item.id"
+              :id="`selected-deptForm-${item.value}-${contactId}`"
+              :key="item.value"
               :close-label="`Remove ${item.title} from ${fullName}'s department forms`"
               color="tertiary"
+              :disabled="isSaving"
               :text="item.title"
-              @click:close="remove(item)"
+              variant="flat"
+              @click:close.stop="() => removeDepartmentForm(item.value)"
             />
           </template>
         </v-combobox>
@@ -141,8 +148,9 @@
       <v-btn
         :id="`cancel-dept-contact-${contactId}-btn`"
         class="text-capitalize"
-        variant="outlined"
+        :disabled="isSaving"
         text="Cancel"
+        variant="outlined"
         @click.prevent="onCancel"
       />
     </div>
@@ -153,7 +161,7 @@
 import PersonLookup from '@/components/admin/PersonLookup'
 import ProgressButton from '@/components/util/ProgressButton'
 import {alertScreenReader, oxfordJoin, putFocusNextTick} from '@/lib/utils'
-import {cloneDeep, differenceBy, find, findIndex, get, isNil, map, sortBy} from 'lodash'
+import {cloneDeep, differenceBy, find, get, isNil, map, remove, sortBy} from 'lodash'
 import {computed, onMounted, ref, watch} from 'vue'
 import {getUserDepartmentForms} from '@/api/user'
 import {storeToRefs} from 'pinia'
@@ -302,11 +310,10 @@ const populateForm = contact => {
   }
 }
 
-const remove = departmentForm => {
-  const formName = departmentForm.name
-  const indexOf = findIndex(contactDepartmentForms.value, {'name': formName})
-  contactDepartmentForms.value.splice(indexOf, 1)
-  alertScreenReader(`Removed ${formName} from ${fullName.value} department forms.`)
+const removeDepartmentForm = formId => {
+  const form = find(contactDepartmentForms.value, {'id': formId})
+  contactDepartmentForms.value = remove(contactDepartmentForms.value, f => f.id !== formId)
+  alertScreenReader(`Removed ${form.name} from ${fullName.value} department forms.`)
   putFocusNextTick(`input-deptForms-${contactId.value}`)
 }
 
