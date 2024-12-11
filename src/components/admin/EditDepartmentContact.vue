@@ -15,6 +15,7 @@
         label="Contact"
         label-class="sr-only"
         list-label="Suggested Contacts List"
+        :on-key-down-esc="onCancel"
         :on-select-result="onSelectSearchResult"
       />
     </div>
@@ -96,11 +97,11 @@
         </v-radio-group>
       </div>
       <div class="mt-3">
-        <label :for="`select-deptForms-${contactId}`" class="form-label">
+        <label :for="`select-department-forms-${contactId}`" class="form-label">
           Department Forms
         </label>
         <v-combobox
-          :id="`select-deptForms-${contactId}`"
+          :id="`select-department-forms-${contactId}`"
           v-model="contactDepartmentForms"
           aria-label="Department Forms"
           autocomplete="off"
@@ -280,6 +281,7 @@ const onSave = () => {
 const onSelectSearchResult = user => {
   populateForm(user)
   alertScreenReader(`${user.firstName} ${user.lastName} selected`)
+  putFocusNextTick(`input-email-${contactId.value}`)
 }
 
 const populateForm = contact => {

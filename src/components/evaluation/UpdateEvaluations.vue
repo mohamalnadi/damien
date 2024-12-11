@@ -196,7 +196,7 @@
         <v-spacer />
         <div class="d-flex pa-2">
           <ProgressButton
-            id="apply-course-action-btn"
+            :id="`${idPrefix}-apply-course-action-btn`"
             :action="onClickApply"
             class="mt-2 mr-2"
             :disabled="disableApply"
@@ -204,13 +204,12 @@
             text="Apply"
           />
           <v-btn
-            id="cancel-duplicate-btn"
+            :id="`${idPrefix}-cancel-duplicate-btn`"
             class="mt-2 mr-2"
             :disabled="disableControls"
+            text="Cancel"
             @click="onClickCancel"
-          >
-            Cancel
-          </v-btn>
+          />
         </div>
       </v-card-actions>
     </v-card>

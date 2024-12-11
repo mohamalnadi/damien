@@ -16,7 +16,7 @@
         v-model="selected"
         :aria-disabled="disabled"
         :aria-labelledby="`${idPrefix}-label`"
-        autocomplete="list"
+        autocomplete="off"
         class="person-lookup"
         :class="inputClass"
         clearable
@@ -42,6 +42,7 @@
         :search="query"
         theme="light"
         :variant="variant"
+        @keydown.esc="onKeyDownEsc"
         @update:focused="onFocusInput"
         @update:menu="onToggleMenu"
         @update:search="onUpdateSearch"
@@ -160,6 +161,11 @@ const props = defineProps({
   listLabel: {
     required: true,
     type: String
+  },
+  onKeyDownEsc: {
+    default: () => {},
+    required: false,
+    type: Function
   },
   onSelectResult: {
     default: () => {},
@@ -284,17 +290,19 @@ const onSelectItem = item => {
 const onToggleMenu = isOpen => {
   nextTick(() => {
     const input = getInputElement()
-    if (isOpen) {
-      const menu = document.getElementById(`${props.idPrefix}-menu`)
-      const listbox = menu && menu.querySelector('[role="listbox"]')
-      if (listbox) {
-        listbox.setAttribute('aria-label', props.listLabel)
+    if (input) {
+      if (isOpen) {
+        const menu = document.getElementById(`${props.idPrefix}-menu`)
+        const listbox = menu && menu.querySelector('[role="listbox"]')
+        if (listbox) {
+          listbox.setAttribute('aria-label', props.listLabel)
+        }
+        input.setAttribute('aria-expanded', true)
+      } else {
+        input.setAttribute('aria-expanded', false)
+        input.removeAttribute('aria-activedescendant')
+        clearInterval(resultsSummaryInterval.value)
       }
-      input.setAttribute('aria-expanded', true)
-    } else {
-      input.setAttribute('aria-expanded', false)
-      input.removeAttribute('aria-activedescendant')
-      clearInterval(resultsSummaryInterval.value)
     }
   })
 }
