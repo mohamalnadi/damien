@@ -1,6 +1,6 @@
 <template>
   <v-card
-    class="modal-content bg-surface-light"
+    class="bg-surface-light mb-0 modal-content"
     flat
     min-width="400px"
   >
@@ -31,19 +31,23 @@
           </v-expansion-panel-title>
           <v-expansion-panel-text :aria-describedby="`notification-recipients-dept-${department.deptId}`">
             <div v-for="(recipient, index) in department.recipients" :key="index" class="d-flex flex-wrap pt-1">
-              <div :id="`notification-recipient-${department.deptId}-${recipient.uid}`" class="align-center bg-green-accent-1 border-sm d-flex mb-1 pa-1 rounded-xl">
+              <div
+                :id="`notification-recipient-${department.deptId}-${recipient.uid}`"
+                class="align-center bg-green-accent-1 border-sm d-flex mb-1 pill-height px-2 py-1 rounded-xl"
+              >
                 <div class="px-2 recipient">
                   {{ recipientLabel(recipient) }}
                 </div>
                 <v-btn
+                  v-if="department.recipients.length > 1"
                   :id="`notification-recipient-remove-${department.deptId}-${recipient.uid}-btn`"
                   :aria-label="`Remove ${recipientLabel(recipient)} from recipients`"
-                  color="transparent"
+                  color="green-accent-1"
                   density="compact"
                   :disabled="isSending"
                   :icon="mdiCloseCircle"
                   variant="flat"
-                  @click.stop="removeRecipient(department, recipient, index)"
+                  @click.stop="() => removeRecipient(department, recipient, index)"
                 />
               </div>
             </div>
@@ -181,6 +185,9 @@ const sendNotification = () => {
 <style scoped>
 .notification-container {
   min-height: 290px;
+}
+.pill-height {
+  min-height: 40px;
 }
 .recipient {
   white-space: break-spaces;
