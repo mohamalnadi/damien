@@ -24,10 +24,9 @@ ENHANCEMENTS, OR MODIFICATIONS.
 """
 
 from damien import db, std_commit
+from damien.lib.util import utc_now
 from damien.models.base import Base
-from flask import current_app as app
-from sqlalchemy.dialects.postgresql import JSONB
-from sqlalchemy.exc import IntegrityError
+from sqlalchemy.dialects.postgresql import insert, JSONB
 
 
 class JsonCache(Base):
@@ -51,22 +50,27 @@ class JsonCache(Base):
     @classmethod
     def clear_department(cls, term_id, department_id):
         cls.query.filter_by(term_id=term_id, department_id=department_id, course_number=None).delete(synchronize_session=False)
+        std_commit()
 
     @classmethod
     def clear_department_section(cls, term_id, department_id, course_number):
         cls.query.filter_by(term_id=term_id, department_id=department_id, course_number=course_number).delete(synchronize_session=False)
+        std_commit()
 
     @classmethod
     def clear_section(cls, term_id, course_number):
         cls.query.filter_by(term_id=term_id, course_number=course_number).delete(synchronize_session=False)
+        std_commit()
 
     @classmethod
     def clear_term(cls, term_id):
         cls.query.filter_by(term_id=term_id).delete(synchronize_session=False)
+        std_commit()
 
     @classmethod
     def delete_matching(cls, token):
         cls.query.filter(cls.json[0].astext.like(f'%{token}%')).delete(synchronize_session=False)
+        std_commit()
 
     @classmethod
     def fetch_all_departments(cls, term_id):
@@ -90,20 +94,34 @@ class JsonCache(Base):
 
     @classmethod
     def set_department(cls, term_id, department_id, json):
-        row = cls(term_id=term_id, department_id=department_id, course_number=None, json=json)
-        try:
-            db.session.add(row)
-            std_commit()
-        except IntegrityError:
-            app.logger.warning(f'Conflict for department cache {term_id}/{department_id}; will attempt to return stowed JSON')
-            return cls.fetch_department(term_id, department_id)
+        timestamp = utc_now()
+        upsert = insert(JsonCache).values(
+            term_id=term_id,
+            department_id=department_id,
+            course_number=None,
+            json=json,
+            created_at=timestamp,
+            updated_at=timestamp,
+        ).on_conflict_do_update(
+            index_elements=['term_id', 'department_id', 'course_number'],
+            set_=dict(json=json, updated_at=timestamp),
+        )
+        db.session.execute(upsert)
+        std_commit()
 
     @classmethod
     def set_section(cls, term_id, department_id, course_number, json):
-        row = cls(term_id=term_id, department_id=department_id, course_number=course_number, json=json)
-        try:
-            db.session.add(row)
-            std_commit()
-        except IntegrityError:
-            app.logger.warning(f'Conflict for section cache {term_id}/{department_id}/{course_number}; will attempt to return stowed JSON')
-            return cls.fetch_section(term_id, department_id, course_number)
+        timestamp = utc_now()
+        upsert = insert(JsonCache).values(
+            term_id=term_id,
+            department_id=department_id,
+            course_number=course_number,
+            json=json,
+            created_at=timestamp,
+            updated_at=timestamp,
+        ).on_conflict_do_update(
+            index_elements=['term_id', 'department_id', 'course_number'],
+            set_=dict(json=json, updated_at=timestamp),
+        )
+        db.session.execute(upsert)
+        std_commit()
