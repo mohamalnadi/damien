@@ -36,7 +36,7 @@
       >
         {{ note ? 'Edit ' : 'Create ' }}<span class="sr-only">Note</span>
       </v-btn>
-      <div v-if="note" role="presentation">|</div>
+      <div v-if="note" class="pr-1 text-muted" role="presentation">|</div>
       <v-btn
         v-if="note"
         id="delete-dept-note-btn"

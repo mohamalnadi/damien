@@ -87,7 +87,7 @@
                 :prepend-icon="mdiPlusThick"
                 text="Add Contact"
                 variant="text"
-                @click="() => isAddingContact = true"
+                @click="onClickAddContact"
               />
               <EditDepartmentContact
                 v-if="isAddingContact"
@@ -204,6 +204,11 @@ const onCancelAddContact = () => {
   isAddingContact.value = false
   alertScreenReader('Canceled. Nothing saved.')
   putFocusNextTick('add-dept-contact-btn')
+}
+
+const onClickAddContact = () => {
+  isAddingContact.value = true
+  putFocusNextTick('person-lookup-input')
 }
 
 const refresh = () => {
