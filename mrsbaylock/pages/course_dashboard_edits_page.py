@@ -503,11 +503,12 @@ class CourseDashboardEditsPage(CourseDashboards):
         app.logger.info(f'Saving changes for CCN {evaluation.ccn}')
         self.wait_for_page_and_click(self.EVAL_CHANGE_SAVE_BUTTON)
 
-    def save_eval_changes(self, evaluation):
+    def save_eval_changes(self, evaluation, status=None):
         self.click_save_eval_changes(evaluation)
-        started = evaluation.eval_start_date <= datetime.date.today()
-        if started:
-            self.proceed_eval_changes()
+        if status == EvaluationStatus.CONFIRMED:
+            started = evaluation.eval_start_date <= datetime.date.today()
+            if started:
+                self.proceed_eval_changes()
         self.when_not_present(self.EVAL_CHANGE_SAVE_BUTTON, utils.get_short_timeout())
 
     def proceed_eval_changes(self):

@@ -318,7 +318,7 @@ class TestEvalErrors:
         self.dept_details_admin_page.change_eval_type(self.x_list_eval, self.eval_type_2)
         self.dept_details_admin_page.change_eval_start_date(self.x_list_eval, self.x_list_start_2)
         self.dept_details_admin_page.select_eval_status(self.x_list_eval, EvaluationStatus.CONFIRMED)
-        self.dept_details_admin_page.save_eval_changes(self.x_list_eval)
+        self.dept_details_admin_page.save_eval_changes(self.x_list_eval, EvaluationStatus.CONFIRMED)
 
     def test_x_list_sl_no_conflicts(self):
         self.dept_details_admin_page.wait_for_eval_rows()

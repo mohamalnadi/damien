@@ -154,6 +154,7 @@ def result_row_to_eval(row, term, dept, foreign_listing=False):
         if i in shares:
             shares.remove(i)
 
+    default_dept_form = row_data(row, 'default_dept_form')
     dept_form = row_data(row, 'dept_form')
     eval_type = row_data(row, 'eval_type')
     eval_type_custom = row_data(row, 'eval_type_custom')
@@ -171,6 +172,7 @@ def result_row_to_eval(row, term, dept, foreign_listing=False):
     eval_data = {
         'term': term,
         'dept': dept,
+        'default_dept_form': default_dept_form,
         'dept_form': dept_form,
         'eval_type': eval_type,
         'eval_type_custom': eval_type_custom,
@@ -201,18 +203,17 @@ def result_to_evals(result, evaluations, term, dept, foreign_listings=False):
         evaluations.append(result_row_to_eval(row, term, dept, foreign_listings))
 
 
-def get_sis_sections_to_evaluate(evals_total, term, dept):
-    # All subjects
+def get_all_subjects(term):
     sql = f"""SELECT DISTINCT(subject_area)
                 FROM unholy_loch.sis_sections
                WHERE unholy_loch.sis_sections.term_id = '{term.term_id}'
     """
     app.logger.debug(sql)
     result = db.session.execute(text(sql))
-    std_commit(allow_test_environment=True)
-    all_subjects = [row['subject_area'] for row in result]
+    return [row['subject_area'] for row in result]
 
-    # Dept subjects
+
+def get_dept_subjects(term, dept):
     date_cond = f"(start_term_id IS NULL OR start_term_id <= '{term.term_id}') AND (end_term_id IS NULL OR end_term_id >= '{term.term_id}')"
     sql = f"""
         SELECT DISTINCT subject_area
@@ -222,9 +223,12 @@ def get_sis_sections_to_evaluate(evals_total, term, dept):
     """
     app.logger.debug(sql)
     result = db.session.execute(text(sql))
-    std_commit(allow_test_environment=True)
-    dept_subjects = [row['subject_area'] for row in result]
+    return [row['subject_area'] for row in result], date_cond
 
+
+def get_sis_sections_to_evaluate(evals_total, term, dept):
+    all_subjects = get_all_subjects(term)
+    dept_subjects, date_cond = get_dept_subjects(term, dept)
     subjects = all_subjects if '' in dept_subjects else dept_subjects
     subject_str = list_to_str(subjects)
 
@@ -243,6 +247,7 @@ def get_sis_sections_to_evaluate(evals_total, term, dept):
                unholy_loch.sis_sections.instructor_role_code AS instructor_role,
                unholy_loch.sis_sections.meeting_start_date AS course_start_date,
                unholy_loch.sis_sections.meeting_end_date AS course_end_date,
+               department_forms.name AS default_dept_form,
                department_forms.name AS dept_form,
                department_catalog_listings.custom_evaluation_types AS eval_type_custom
           FROM departments
@@ -448,6 +453,8 @@ def get_manual_sections(evals, term, dept):
 
 
 def get_edited_sections(term, dept):
+    dept_subjects, date_cond = get_dept_subjects(term, dept)
+    clause = '' if '' in dept_subjects else ' AND unholy_loch.sis_sections.subject_area = department_catalog_listings.subject_area'
     sql = f"""
         SELECT evaluations.course_number AS ccn,
                ARRAY_TO_STRING(ARRAY_AGG(DISTINCT unholy_loch.cross_listings.cross_listing_number), ',') AS listings,
@@ -465,11 +472,18 @@ def get_edited_sections(term, dept):
                evaluations.start_date AS eval_start_date,
                evaluations.end_date AS eval_end_date,
                evaluations.status AS status,
+               default_form.name AS default_dept_form,
                department_forms.name AS dept_form,
                evaluation_types.name AS eval_type
           FROM evaluations
           JOIN unholy_loch.sis_sections
             ON unholy_loch.sis_sections.course_number = evaluations.course_number
+          JOIN departments
+            ON departments.id = '{dept.dept_id}'
+          JOIN department_catalog_listings
+            ON department_catalog_listings.department_id = departments.id{clause}
+          JOIN department_forms default_form
+            ON default_form.id = department_catalog_listings.default_form_id
      LEFT JOIN department_forms
             ON department_forms.id = evaluations.department_form_id
      LEFT JOIN evaluation_types
@@ -481,7 +495,6 @@ def get_edited_sections(term, dept):
             ON unholy_loch.co_schedulings.course_number = evaluations.course_number
            AND unholy_loch.co_schedulings.term_id = evaluations.term_id
          WHERE evaluations.term_id = '{term.term_id}'
-           AND evaluations.department_id = '{dept.dept_id}'
            AND unholy_loch.sis_sections.term_id = '{term.term_id}'
       GROUP BY evaluations.course_number,
                evaluations.id,
@@ -498,6 +511,7 @@ def get_edited_sections(term, dept):
                evaluations.start_date,
                evaluations.end_date,
                evaluations.status,
+               default_form.name,
                department_forms.name,
                evaluation_types.name
       ORDER BY evaluations.id ASC

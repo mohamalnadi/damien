@@ -842,7 +842,7 @@ const onProceedMarkAsDone = () => {
 }
 
 const rowId = (evaluation, rowIndex) => {
-  const deptId = get(evaluation, 'department.id', departmentStore.department.id)
+  const deptId = get(evaluation, 'department.id', get(departmentStore, 'department.id', 'None'))
   const instructorUid = get(evaluation, 'instructor.uid', 'None')
   const deptForm = get(evaluation, 'departmentForm.name', get(evaluation, 'defaultDepartmentForm.name', 'None'))
   const evalType = get(evaluation, 'evaluationType.name', 'None')
