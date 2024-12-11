@@ -134,6 +134,7 @@
     <v-dialog
       v-model="isCreatingNotification"
       aria-labelledby="send-notification-header"
+      width="800"
       persistent
     >
       <NotificationForm
@@ -141,6 +142,7 @@
         :after-send="afterSendNotification"
         class="w-75"
         :class="{'w-100': display.smAndDown.value}"
+        min-width="400px"
         :on-cancel="cancelSendNotification"
         :recipients="notificationRecipients"
       />

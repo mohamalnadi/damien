@@ -1,15 +1,15 @@
 <template>
   <v-card
-    class="bg-surface-light mb-0 modal-content"
+    class="mb-0 modal-content"
     flat
-    min-width="400px"
+    :min-width="minWidth"
   >
-    <v-card-title :class="{'text-muted': isSending}">
+    <v-card-title class="px-4" :class="{'text-muted': isSending}">
       <h3 id="send-notification-header">
         Send Notification
       </h3>
     </v-card-title>
-    <v-card-subtitle v-if="selectedRecipients">
+    <v-card-subtitle v-if="selectedRecipients" class="px-4">
       <h4 id="notification-recipients-header" class="font-size-16 mb-2">Message will be sent to:</h4>
       <v-expansion-panels
         id="notification-recipients-container"
@@ -55,7 +55,7 @@
         </v-expansion-panel>
       </v-expansion-panels>
     </v-card-subtitle>
-    <v-card-text class="notification-container py-0">
+    <v-card-text class="notification-container px-4 py-0">
       <v-form
         class="py-4"
         :class="isSending ? 'text-muted' : ''"
@@ -92,7 +92,7 @@
         </div>
       </v-form>
     </v-card-text>
-    <v-card-actions class="modal-footer">
+    <v-card-actions class="modal-footer px-4">
       <div class="text-right w-100">
         <ProgressButton
           id="send-notification-btn"
@@ -127,6 +127,11 @@ const props = defineProps({
   afterSend: {
     required: true,
     type: Function
+  },
+  minWidth: {
+    default: undefined,
+    required: false,
+    type: [String, Number]
   },
   onCancel: {
     required: true,
