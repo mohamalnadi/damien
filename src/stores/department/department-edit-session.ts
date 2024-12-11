@@ -61,7 +61,8 @@ const $_decorateEvaluation = (e: any, allEvaluations: any[]) => {
     e.subjectArea,
     sortableCatalogId,
     e.instructionFormat,
-    e.sectionNumber
+    e.sectionNumber,
+    e.courseTitle
   ].join(' ')
   e.sortableCourseNumber = e.courseNumber
 
