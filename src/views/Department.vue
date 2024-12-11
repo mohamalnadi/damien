@@ -70,6 +70,7 @@
                     <NotificationForm
                       v-if="isCreatingNotification"
                       :after-send="afterSendNotification"
+                      class="bg-surface-light"
                       :on-cancel="cancelSendNotification"
                       :recipients="[notificationRecipients]"
                     />
