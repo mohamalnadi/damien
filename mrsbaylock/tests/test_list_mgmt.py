@@ -89,8 +89,6 @@ class TestListManagement:
         self.eval_unmarked.dept_form = self.form
         self.eval_unmarked.eval_type = self.eval_type
         self.dept_details_admin_page.wait_for_eval_rows()
-        self.dept_details_admin_page.reload_page()
-        self.dept_details_admin_page.wait_for_eval_rows()
         assert EvaluationStatus.UNMARKED.value['ui'] in self.dept_details_admin_page.eval_status(self.eval_unmarked)
         assert self.form in self.dept_details_admin_page.eval_dept_form(self.eval_unmarked)
         assert self.eval_type in self.dept_details_admin_page.eval_type(self.eval_unmarked)
@@ -105,8 +103,6 @@ class TestListManagement:
         self.eval_to_review.eval_type = self.eval_type
         self.eval_to_review.status = EvaluationStatus.FOR_REVIEW
         self.dept_details_admin_page.wait_for_eval_rows()
-        self.dept_details_admin_page.reload_page()
-        self.dept_details_admin_page.wait_for_eval_rows()
         assert EvaluationStatus.FOR_REVIEW.value['ui'] in self.dept_details_admin_page.eval_status(self.eval_to_review)
         assert self.form in self.dept_details_admin_page.eval_dept_form(self.eval_to_review)
         assert self.eval_type in self.dept_details_admin_page.eval_type(self.eval_to_review)
@@ -116,12 +112,10 @@ class TestListManagement:
         self.dept_details_admin_page.select_eval_status(self.eval_confirmed, EvaluationStatus.CONFIRMED)
         self.dept_details_admin_page.change_dept_form(self.eval_confirmed, self.form)
         self.dept_details_admin_page.change_eval_type(self.eval_confirmed, self.eval_type)
-        self.dept_details_admin_page.save_eval_changes(self.eval_confirmed)
+        self.dept_details_admin_page.save_eval_changes(self.eval_confirmed, EvaluationStatus.CONFIRMED)
         self.eval_confirmed.dept_form = self.form
         self.eval_confirmed.eval_type = self.eval_type
-        self.eval_confirmed.status = EvaluationStatus.FOR_REVIEW
-        self.dept_details_admin_page.wait_for_eval_rows()
-        self.dept_details_admin_page.reload_page()
+        self.eval_confirmed.status = EvaluationStatus.CONFIRMED
         self.dept_details_admin_page.wait_for_eval_rows()
         assert EvaluationStatus.CONFIRMED.value['ui'] in self.dept_details_admin_page.eval_status(self.eval_confirmed)
         assert self.form in self.dept_details_admin_page.eval_dept_form(self.eval_confirmed)
@@ -135,11 +129,9 @@ class TestListManagement:
         self.dept_details_admin_page.click_edit_evaluation(dupe)
         self.dept_details_admin_page.select_eval_status(self.eval_confirmed, EvaluationStatus.CONFIRMED)
         self.dept_details_admin_page.change_dept_form(self.eval_confirmed, self.form)
-        self.dept_details_admin_page.save_eval_changes(self.eval_confirmed)
+        self.dept_details_admin_page.save_eval_changes(self.eval_confirmed, EvaluationStatus.CONFIRMED)
         dupe.dept_form = self.form
         dupe.status = EvaluationStatus.CONFIRMED
-        self.dept_details_admin_page.wait_for_eval_rows()
-        self.dept_details_admin_page.reload_page()
         self.dept_details_admin_page.wait_for_eval_rows()
         assert self.instructor.uid in self.dept_details_admin_page.eval_instructor(dupe)
         assert self.instructor.first_name in self.dept_details_admin_page.eval_instructor(dupe)
@@ -157,13 +149,13 @@ class TestListManagement:
         assert self.eval_type not in self.list_mgmt_page.visible_eval_type_names()
 
     def test_unmarked_form_and_type_deleted(self):
-        self.eval_unmarked.dept_form = None
+        self.eval_unmarked.dept_form = self.eval_unmarked.default_dept_form
         self.dept_details_admin_page.load_dept_page(self.dept)
         assert self.form not in self.dept_details_admin_page.eval_dept_form(self.eval_unmarked)
         assert self.dept_details_admin_page.eval_type(self.eval_unmarked) == self.eval_type
 
     def test_for_review_form_and_type_deleted(self):
-        self.eval_to_review.dept_form = None
+        self.eval_to_review.dept_form = self.eval_to_review.default_dept_form
         assert self.form not in self.dept_details_admin_page.eval_dept_form(self.eval_to_review)
         assert self.dept_details_admin_page.eval_type(self.eval_to_review) == self.eval_type
 

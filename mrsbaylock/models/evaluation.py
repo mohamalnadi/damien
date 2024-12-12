@@ -106,6 +106,10 @@ class Evaluation(object):
         return self.data['eval_end_date']
 
     @property
+    def default_dept_form(self):
+        return self.data['default_dept_form']
+
+    @property
     def dept_form(self):
         return self.data['dept_form']
 
@@ -156,6 +160,10 @@ class Evaluation(object):
     @eval_end_date.setter
     def eval_end_date(self, value):
         self.data['eval_end_date'] = value
+
+    @default_dept_form.setter
+    def default_dept_form(self, value):
+        self.data['default_dept_form'] = value
 
     @dept_form.setter
     def dept_form(self, value):
