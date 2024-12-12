@@ -31,9 +31,17 @@
           </template>
           <v-list density="comfortable">
             <v-list-item
+              id="dark-mode-toggle"
+              link
+              @click="toggleColorScheme"
+            >
+              <v-list-item-title class="font-weight-medium">
+                {{ theme.global.current.value.dark ? 'Light' : 'Dark' }} mode
+              </v-list-item-title>
+            </v-list-item>
+            <v-list-item
               id="menu-item-log-out"
               :append-icon="mdiLogout"
-              base-color="secondary"
               link
               @click="logOut"
             >
@@ -44,6 +52,7 @@
       </div>
     </v-app-bar>
     <v-navigation-drawer
+      v-if="currentUser.isAdmin"
       aria-labelledby="nav-header"
       class="font-size-14 pt-2"
       color="secondary"
@@ -104,25 +113,6 @@
           </div>
         </div>
       </v-list-item>
-      <v-list-item
-        :id="`sidebar-link-${size(navItems)}`"
-        class="font-size-16"
-        :class="{'py-4 px-3': isSidebarCollapsed, 'pa-4': !isSidebarCollapsed}"
-        @click="toggleColorScheme"
-      >
-        <div class="align-center d-flex">
-          <v-icon
-            aria-label="Lightbulb icon"
-            color="primary-contrast"
-            :icon="theme.global.current.value.dark ? mdiLightbulb : mdiLightbulbOutline"
-            size="x-large"
-            :title="isSidebarCollapsed ? `${theme.global.current.value.dark ? 'Light' : 'Dark'} mode` : undefined"
-          />
-          <div class="font-weight-medium ml-4 nav-drawer-letter-spacing text-no-wrap text-primary-contrast" role="button">
-            {{ theme.global.current.value.dark ? 'Light' : 'Dark' }} mode
-          </div>
-        </div>
-      </v-list-item>
     </v-navigation-drawer>
     <v-main id="content" class="mb-4" :style="`--v-layout-bottom: ${footerHeight}px;`">
       <Snackbar />
@@ -154,15 +144,13 @@ import Snackbar from '@/components/util/Snackbar'
 import Spinner from '@/components/util/Spinner'
 import {alertScreenReader, stripAnchorRef} from '@/lib/utils'
 import {computed, onMounted, ref} from 'vue'
-import {get, map, size, startsWith} from 'lodash'
+import {get, startsWith} from 'lodash'
 import {getCasLogoutUrl} from '@/api/auth'
 import {
   mdiAccountGroup,
   mdiAlertCircle,
   mdiArrowCollapseLeft,
   mdiArrowExpandRight,
-  mdiLightbulb,
-  mdiLightbulbOutline,
   mdiListStatus,
   mdiLogout,
   mdiPlaylistEdit
@@ -175,7 +163,7 @@ const contextStore = useContextStore()
 const currentUser = contextStore.currentUser
 const isSidebarCollapsed = ref(false)
 const layout = ref()
-const navItems = ref(undefined)
+const navItems = ref([])
 const route = useRoute()
 const router = useRouter()
 const theme = useTheme()
@@ -195,15 +183,6 @@ onMounted(() => {
       {id: 'departments', title: 'Departments', icon: mdiAccountGroup, path: '/departments'},
       {id: 'settings', title: 'Settings', icon: mdiPlaylistEdit, path: '/lists'}
     ]
-  } else if (size(currentUser.departments)) {
-    navItems.value = map(currentUser.departments, department => {
-      const firstInitial = department.name.charAt(0).toLowerCase()
-      return {
-        title: department.name,
-        icon: `mdi-alpha-${firstInitial}-circle`,
-        path: `/department/${department.id}`
-      }
-    })
   }
 })
 

@@ -1,19 +1,48 @@
 <template>
   <div v-if="!contextStore.loading" class="page-margins">
     <PageHeader>
-      <span v-if="get(department, 'deptName')">
-        {{ department.deptName }}
-        <span v-if="size(getCatalogListings(department))">({{ getCatalogListings(department).join(', ') }})</span>
-        <span v-if="contextStore.selectedTermName" class="mr-2">&mdash;{{ contextStore.selectedTermName }}</span>
-      </span>
+      <div class="align-center d-flex justify-space-between">
+        <div v-if="get(department, 'deptName')">
+          {{ department.deptName }}
+          <span v-if="size(getCatalogListings(department))">({{ getCatalogListings(department).join(', ') }})</span>
+          <span v-if="contextStore.selectedTermName" class="mr-2">&mdash;{{ contextStore.selectedTermName }}</span>
+        </div>
+      </div>
       <template #append>
         <TermSelect :after-select="refresh" :term-ids="get(department, 'enrolledTerms')" />
       </template>
     </PageHeader>
+    <div v-if="!currentUser.isAdmin" class="mb-2">
+      <v-menu rounded="lg">
+        <template #activator="{props: defineProps}">
+          <v-btn
+            :append-icon="mdiChevronDown"
+            color="tertiary"
+            text="Change Department"
+            variant="flat"
+            v-bind="defineProps"
+          />
+        </template>
+        <v-list>
+          <template
+            v-for="option in currentUser.departments"
+            :key="option.id"
+          >
+            <v-list-item
+              v-if="option.id !== department.id"
+              :id="`department-${option.id}-menu-item`"
+              @click="() => refresh(option.id)"
+            >
+              <v-list-item-title>{{ option.name }}</v-list-item-title>
+            </v-list-item>
+          </template>
+        </v-list>
+      </v-menu>
+    </div>
     <v-container class="mx-0 pb-2 pt-1 px-0" fluid>
       <v-row justify="start">
         <v-col cols="12" md="6">
-          <div class="border-sm h-100 pa-3">
+          <div class="border-sm pa-3">
             <v-expansion-panels v-model="contactsPanel" flat>
               <v-expansion-panel>
                 <template #default>
@@ -142,21 +171,20 @@ import {NUMBER_OF_THE_BEAST, useDepartmentStore} from '@/stores/department/depar
 import {alertScreenReader, getCatalogListings, putFocusNextTick} from '@/lib/utils'
 import {computed, onMounted, ref, watch} from 'vue'
 import {filter as _filter, get, includes, isEmpty, size} from 'lodash'
-import {mdiClose, mdiMinusBoxMultipleOutline, mdiPlusBoxMultipleOutline, mdiPlusThick} from '@mdi/js'
+import {mdiChevronDown, mdiClose, mdiMinusBoxMultipleOutline, mdiPlusBoxMultipleOutline, mdiPlusThick} from '@mdi/js'
 import {storeToRefs} from 'pinia'
 import {useContextStore} from '@/stores/context'
 import {useRoute} from 'vue-router'
 
 const contextStore = useContextStore()
-const currentUser = contextStore.currentUser
-const departmentStore = useDepartmentStore()
-const {contacts, department, disableControls, showTheOmenPoster} = storeToRefs(departmentStore)
-
 const contactDetailsPanel = ref([])
 const contactsPanel = ref(undefined)
+const currentUser = contextStore.currentUser
+const departmentStore = useDepartmentStore()
 const isAddingContact = ref(false)
 const isCreatingNotification = ref(false)
 const route = useRoute()
+const {contacts, department, disableControls, showTheOmenPoster} = storeToRefs(departmentStore)
 
 const notificationRecipients = computed(() => {
   return {
@@ -212,11 +240,11 @@ const onClickAddContact = () => {
   putFocusNextTick('person-lookup-input')
 }
 
-const refresh = () => {
+const refresh = departmentId => {
   contextStore.loadingStart()
   alertScreenReader(`Loading ${contextStore.selectedTermName}`)
-  const departmentId = get(route, 'params.departmentId')
-  departmentStore.init(departmentId).then(department => {
+  departmentStore.init(departmentId || get(route, 'params.departmentId')).then(department => {
+    contextStore.setDepartmentLastViewed(department)
     departmentStore.setShowTheOmenPoster(route.query.n === NUMBER_OF_THE_BEAST)
     contextStore.loadingComplete(`${department.deptName} ${contextStore.selectedTermName}`)
   })

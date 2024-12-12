@@ -30,24 +30,24 @@ const setTerm = (to: any, from: any, next: any) => {
   }
 }
 
-const beforeEnterDefaultRoute = (to: any, from: any, next: any) => {
+const getDefaultRoute = (routeForUnauthorized?: any) => {
   const currentUser = useContextStore().currentUser
+  let route: any = undefined
   if (currentUser.isAuthenticated) {
     if (currentUser.isAdmin) {
-      next('/status')
+      route = {path: '/status'}
     } else if (size(currentUser.departments)) {
-      next(`/department/${currentUser.departments[0].id}`)
+      route = {path: `/department/${currentUser.departments[0].id}`}
     } else {
-      next({
-        path: '/error',
-        query: {
-          m: 'Sorry, we could not find any departments that you belong to.'
+        route = {
+          path: '/error',
+          query: {
+            m: 'Sorry, we could not find any departments that you belong to.'
+          }
         }
-      })
     }
-  } else {
-    next()
   }
+  return route || routeForUnauthorized
 }
 
 const routes:RouteRecordRaw[] = [
@@ -55,7 +55,7 @@ const routes:RouteRecordRaw[] = [
     path: '/',
     component: Login,
     name: 'Login',
-    beforeEnter: beforeEnterDefaultRoute,
+    beforeEnter: (to: any, from: any, next: any) => next(getDefaultRoute()),
     meta: {
       title: 'Welcome'
     }
@@ -63,25 +63,7 @@ const routes:RouteRecordRaw[] = [
   {
     name: 'Start',
     path: '/start',
-    redirect: () => {
-      const currentUser = useContextStore().currentUser
-      if (currentUser.isAuthenticated) {
-        if (currentUser.isAdmin) {
-          return {path: '/status'}
-        } else if (size(currentUser.departments)) {
-          return {path: `/department/${currentUser.departments[0].id}`}
-        } else {
-            return {
-              path: '/error',
-              query: {
-                m: 'Sorry, we could not find any departments that you belong to.'
-              }
-            }
-        }
-      } else {
-        return {name: 'Login'}
-      }
-    }
+    redirect: () => getDefaultRoute({name: 'Login'})
   },
   {
     path: '/',

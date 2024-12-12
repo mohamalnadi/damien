@@ -40,14 +40,8 @@ def cas_login():
     target_url = request.args.get('url')
     uid, attributes, proxy_granting_ticket = _cas_client(target_url).verify_ticket(ticket)
     app.logger.info(f'Logged into CAS as user {uid}')
-    user = _authorized_user(uid)
-    if user is None:
-        param = ('error', f"""
-            Sorry, you are not registered to use Course Evaluations.
-            Please <a href="mailto:{app.config['EMAIL_COURSE_EVALUATION_ADMIN']}">email us</a> for assistance.
-        """)
-        redirect_url = add_param_to_url('/', param)
-    else:
+    user = User.find_by_uid(uid)
+    if _is_authorized_user(user):
         _login(user)
         if _is_safe_url(request.args.get('next')):
             # Is safe URL per https://flask-login.readthedocs.io/en/latest/
@@ -55,6 +49,13 @@ def cas_login():
             redirect_url = target_url or '/'
         else:
             return abort(400)
+    else:
+        app.logger.error(f'UID {uid} is not an authorized user.')
+        param = ('error', f"""
+            Sorry, you are not registered to use Course Evaluations.
+            Please <a href="mailto:{app.config['EMAIL_COURSE_EVALUATION_ADMIN']}">email us</a> for assistance.
+        """)
+        redirect_url = add_param_to_url('/', param)
     return redirect(redirect_url)
 
 
@@ -74,15 +75,16 @@ def dev_auth_login():
         if password != app.config['DEVELOPER_AUTH_PASSWORD']:
             return tolerant_jsonify({'message': 'Invalid credentials'}, 401)
         uid = params.get('uid')
-        user = _authorized_user(uid)
-        if user is None:
-            return tolerant_jsonify({'message': f'Sorry, user with UID {uid} is not registered to use Damien.'}, 403)
-        else:
+        user = User.find_by_uid(uid)
+        if _is_authorized_user(user):
             app.logger.info(f'Dev-auth used to log in as UID {uid}')
             authenticated = _login(user) and current_user.is_authenticated
             if authenticated:
                 return tolerant_jsonify(current_user.to_api_json())
             return tolerant_jsonify({'message': f'User {user.id} failed to authenticate.'}, 403)
+        else:
+            app.logger.error(f'UID {uid} is not an authorized user.')
+            return tolerant_jsonify({'message': f'Sorry, user with UID {uid} is not registered to use Damien.'}, 403)
     else:
         raise ResourceNotFoundError('Unknown path')
 
@@ -99,13 +101,6 @@ def logout():
     })
 
 
-def _authorized_user(uid):
-    user = User.find_by_uid(uid)
-    if user is None:
-        app.logger.error(f'UID {uid} is not an authorized user.')
-    return user
-
-
 def _cas_client(target_url=None):
     cas_server = app.config['CAS_SERVER']
     # One (possible) advantage this has over "request.base_url" is that it embeds the configured SERVER_NAME.
@@ -113,6 +108,10 @@ def _cas_client(target_url=None):
     if target_url:
         service_url = service_url + '?' + urlencode({'url': target_url})
     return cas.CASClientV3(server_url=cas_server, service_url=service_url)
+
+
+def _is_authorized_user(user):
+    return user.is_admin or len(user.department_memberships) > 0 if user else False
 
 
 def _is_safe_url(target):
