@@ -472,7 +472,7 @@
                   />
                   <v-btn
                     id="cancel-evaluation-edit-btn"
-                    class="evaluation-form-btn ma-2 text-primary"
+                    class="evaluation-form-btn evaluation-form-btn-cancel ma-2"
                     :disabled="isSaving"
                     text="Cancel"
                     variant="flat"
@@ -1053,5 +1053,8 @@ tr.border-top-none td {
 }
 .xlisting-note {
   font-size: 0.8em;
+}
+.evaluation-form-btn-cancel {
+  color: rgba(var(--v-theme-on-surface),var(--v-high-emphasis-opacity)) !important;
 }
 </style>
