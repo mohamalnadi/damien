@@ -6,9 +6,8 @@
     >
       Notes
     </h2>
-    <div v-if="!isEditing" class="text-condensed pt-2">
-      <pre v-if="note" id="dept-note" class="body-2 text-condensed text-prewrap">{{ note }}</pre>
-      <div v-if="!note" id="dept-note-no-data" class="font-italic text-grey ml-1 my-2">None</div>
+    <div v-if="!isEditing && note" class="text-condensed pt-2">
+      <pre id="dept-note" class="body-2 text-condensed text-prewrap">{{ note }}</pre>
     </div>
     <v-form v-if="isEditing" class="pt-2">
       <v-textarea

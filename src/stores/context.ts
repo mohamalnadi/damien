@@ -31,6 +31,7 @@ export const useContextStore = defineStore('context', {
       isAdmin: false,
       isAuthenticated: false
     } as CurrentUser,
+    departmentLastViewed: undefined,
     isSelectedTermLocked: false,
     loading: false,
     screenReaderAlert: {
@@ -48,7 +49,7 @@ export const useContextStore = defineStore('context', {
     snackbarShow: false
   }),
   actions: {
-    loadingComplete(pageTitle: string, alert?: string) {
+    loadingComplete(pageTitle?: string, alert?: string) {
       document.title = `${pageTitle || 'UC Berkeley'} | Course Evaluations`
       this.loading = false
       if (alert) {
@@ -81,6 +82,9 @@ export const useContextStore = defineStore('context', {
     },
     setDepartmentForms(departmentForms: any) {
       this.config.departmentForms = departmentForms
+    },
+    setDepartmentLastViewed(department: any) {
+      this.departmentLastViewed = department
     },
     setEvaluationTypes(evaluationTypes: any) {
       this.config.evaluationTypes = evaluationTypes
