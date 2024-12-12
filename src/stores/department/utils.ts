@@ -39,14 +39,12 @@ export function validateMarkAsDone(selectedEvaluations: any[]): string | undefin
   let warningMessage: string | undefined = undefined
   const now = DateTime.now()
   const nowISODate = now.toISODate()
-  const evaluationsInProgress = filter(selectedEvaluations, e => nowISODate > e.startDate)
+  const evaluationsInProgress = filter(selectedEvaluations, e => nowISODate > DateTime.fromJSDate(e.startDate).toFormat('MM/dd/yy'))
   if (evaluationsInProgress.length) {
     // Grab the first in-progress evaluation, to give the user an example of the problem.
     const e = evaluationsInProgress[0]
     const course = `${e.subjectArea} ${e.catalogId} ${e.instructionFormat} ${e.sectionNumber}`
-    let startDate: any = DateTime.fromISO(e.startDate)
-    startDate = startDate.toFormat(startDate.year === now.year ? 'MMMM d' : 'DDD')
-
+    const startDate: any = DateTime.fromJSDate(e.startDate).toFormat('MM/dd/yy')
     if (evaluationsInProgress.length === 1) {
       warningMessage = `The ${course} evaluation period started on ${startDate}.
         Are you sure you want to mark it as done?`
