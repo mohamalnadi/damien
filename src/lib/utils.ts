@@ -39,7 +39,7 @@ export function pluralize(noun: string, count: number, substitutions: any = {}, 
 
 export function putFocusNextTick(
   id: string,
-  {scroll=true, scrollBlock='center', cssSelector=undefined}: {scroll?: Boolean, scrollBlock?: any, cssSelector?: string}={}
+  {scroll=true, scrollBlock='center', cssSelector=undefined}: {scroll?: boolean, scrollBlock?: any, cssSelector?: string}={}
 ) {
   const callable = () => {
     let el = document.getElementById(id)

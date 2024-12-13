@@ -49,7 +49,7 @@ export function updateDepartmentNote(departmentId: number, note: string, termId?
     .then(response => response.data, () => null)
 }
 
-export function updateEvaluations(departmentId: number, action: string, evaluationIds: any[], termId: string, fields?: Object) {
+export function updateEvaluations(departmentId: number, action: string, evaluationIds: any[], termId: string, fields?: object) {
   const data = {action, evaluationIds, fields}
   return axios.post(`${getApiBaseUrl()}/api/department/${departmentId}/evaluations?term_id=${termId}`, data)
     .then(response => response.data)
