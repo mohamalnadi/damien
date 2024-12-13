@@ -1,73 +1,79 @@
 <template>
-  <DatePicker
-    v-model.date="model"
-    :disabled="disabled"
-    :input-debounce="500"
-    :max-date="maxDate"
-    :min-date="minDate"
-    :popover="{placement: 'top', visibility: 'focus'}"
-    :step="1"
-    @did-move="makeCalendarAccessible"
-    @dayclick="() => putFocusNextTick(`${idPrefix}-clear-btn`)"
-    @daykeydown="(day, e) => onDaykeydown(e)"
-    @popover-did-hide="() => isPopoverVisible = false"
-    @popover-did-show="onPopoverShown"
-    @transition-start="() => onTransitionStart"
-  >
-    <template #default="{ inputValue, inputEvents }">
-      <div
-        class="v-theme--light custom-text-field"
-        :class="{ 'error--text': !isValid(inputValue), disabled: disabled }"
-        :aria-invalid="!isValid(inputValue)"
-      >
-        <input
-          :id="inputId"
-          type="text"
-          :aria-controls="`${idPrefix}-popover`"
-          :aria-describedby="ariaDescribedby"
-          :aria-expanded="isPopoverVisible"
-          aria-haspopup="dialog"
-          :aria-required="required"
-          autocomplete="off"
-          :disabled="disabled"
-          :value="inputValue"
-          placeholder="MM/DD/YYYY"
-          @input="onInput($event, inputEvents)"
-          @keyup="onInputKeyup($event, inputEvents)"
-          @mouseleave="inputEvents.mouseleave"
-          @mousemove="inputEvents.mousemove"
-          @focus="() => onUpdateFocus(true, inputEvents)"
-          @blur="() => onUpdateFocus(false, inputEvents)"
-          @keydown="inputEvents.keydown"
-          @paste="inputEvents.paste"
-          @select="inputEvents.select"
-          @change="inputEvents.change"
-          @focusin="inputEvents.focusin"
-          @focusout="inputEvents.focusout"
-        />
-        <button
-          v-if="inputValue"
-          :id="`${idPrefix}-clear-btn`"
-          :aria-label="`Clear ${ariaLabel}`"
-          class="clear-button clear-icon"
-          :disabled="disabled"
-          @click.stop.prevent="onClickClear($event, inputEvents)"
-        >
-          <v-icon :icon="mdiCloseCircleOutline"></v-icon>
-        </button>
-      </div>
-    </template>
-  </DatePicker>
+  <div class="date-picker d-flex position-relative">
+    <DatePicker
+      v-model.date="model"
+      :disabled="disabled"
+      :input-debounce="500"
+      :max-date="maxDate"
+      :min-date="minDate"
+      :popover="{placement: placement, visibility: 'focus'}"
+      :step="1"
+      @did-move="makeCalendarAccessible"
+      @dayclick="() => putFocusNextTick(`${idPrefix}-clear-btn`)"
+      @daykeydown="(day, e) => onDaykeydown(e)"
+      @popover-did-hide="() => isPopoverVisible = false"
+      @popover-did-show="onPopoverShown"
+      @transition-start="() => onTransitionStart"
+    >
+      <template #default="{ inputValue, inputEvents }">
+        <div class="v-theme--light custom-text-field">
+          <input
+            :id="inputId"
+            type="text"
+            :aria-controls="`${idPrefix}-popover`"
+            :aria-describedby="ariaDescribedby"
+            :aria-expanded="isPopoverVisible"
+            aria-haspopup="dialog"
+            :aria-invalid="!isValid(inputValue)"
+            :aria-required="required"
+            autocomplete="off"
+            :class="{ 'error--text': !isValid(inputValue), disabled: disabled }"
+            :disabled="disabled"
+            maxlength="10"
+            placeholder="MM/DD/YYYY"
+            :value="inputValue"
+            @input="onInput($event, inputEvents)"
+            @keyup="onInputKeyup($event, inputEvents)"
+            @mouseleave="inputEvents.mouseleave"
+            @mousemove="inputEvents.mousemove"
+            @focus="() => onUpdateFocus(true, inputEvents)"
+            @blur="() => onUpdateFocus(false, inputEvents)"
+            @keydown="inputEvents.keydown"
+            @paste="inputEvents.paste"
+            @select="inputEvents.select"
+            @change="inputEvents.change"
+            @focusin="inputEvents.focusin"
+            @focusout="inputEvents.focusout"
+          />
+        </div>
+      </template>
+    </DatePicker>
+    <button
+      v-if="model"
+      :id="`${idPrefix}-clear-btn`"
+      :aria-label="`Clear ${ariaLabel}`"
+      class="clear-button clear-icon"
+      :disabled="disabled"
+      @click.stop.prevent="event => onClickClear(event, dateInputEvents)"
+    >
+      <v-icon
+        color="secondary"
+        height="20"
+        :icon="mdiCloseCircle"
+        width="20"
+      ></v-icon>
+    </button>
+  </div>
 </template>
 
 
 <script setup>
-import {alertScreenReader, putFocusNextTick} from '@/lib/utils'
-import {computed, nextTick, onBeforeUnmount, onMounted, ref} from 'vue'
 import {DateTime} from 'luxon'
-import {each} from 'lodash'
-import {mdiCloseCircleOutline} from '@mdi/js'
 import {DatePicker} from 'v-calendar'
+import {alertScreenReader, putFocusNextTick} from '@/lib/utils'
+import {each} from 'lodash'
+import {mdiCloseCircle} from '@mdi/js'
+import {nextTick, onBeforeUnmount, onMounted, ref} from 'vue'
 
 const props = defineProps({
   ariaLabel: {
@@ -106,6 +112,11 @@ const props = defineProps({
     required: false,
     type: Date,
   },
+  placement: {
+    default: 'top',
+    required: false,
+    type: String
+  },
   required: {
     required: false,
     type: Boolean
@@ -125,7 +136,8 @@ const model = defineModel({
   },
   type: Date
 })
-const inputId = computed(() => `${props.idPrefix}-input`)
+const dateInputEvents = ref(undefined)
+const inputId = `${props.idPrefix}-input`
 const isPopoverVisible = ref(false)
 const popover = ref()
 
@@ -138,7 +150,7 @@ onBeforeUnmount(() => {
 
 onMounted(() => {
   // Setting this as a prop on the VTextField component breaks the "clear" button.
-  document.getElementById(inputId.value)?.setAttribute('role', 'combobox')
+  document.getElementById(inputId)?.setAttribute('role', 'combobox')
   // Workaround for https://github.com/nathanreyes/v-calendar/issues/1459
   document.getElementById(props.containerId)?.addEventListener('keydown', onKeydownPreventClick)
 })
@@ -147,11 +159,6 @@ const isMonthNavBtn = el => el.id === `${props.idPrefix}-popover-next-month-btn`
 
 const isSpaceOrEnter = key => {
   return key === ' ' || key === 'Spacebar' || key === 'Enter'
-}
-const onKeydownPreventClick = e => {
-  if (e && isMonthNavBtn(e.target) && isSpaceOrEnter(e.key)) {
-    e.preventDefault()
-  }
 }
 
 const isValid = dateString => {
@@ -216,12 +223,12 @@ const makeNavAccessible = () => {
 }
 
 const onClickClear = (e, inputEvents) => {
-  const inputElement = document.getElementById(inputId.value)
+  const inputElement = document.getElementById(inputId)
   if (inputElement) {
     inputElement.value = ''
     inputEvents.change(e)
     alertScreenReader('Cleared')
-    putFocusNextTick(inputId.value)
+    putFocusNextTick(inputId)
     model.value = undefined
   }
 }
@@ -230,6 +237,10 @@ const onDaykeydown = e => {
   if (e.code === 'Enter' || e.code === 'Space') {
     putFocusNextTick(`${props.idPrefix}-clear-btn`)
   }
+}
+
+const onInput = (event, inputEvents) => {
+  inputEvents.input(event)
 }
 
 const onInputKeyup = (e, inputEvents) => {
@@ -244,6 +255,12 @@ const onInputKeyup = (e, inputEvents) => {
     putFocusNextTick(`${props.idPrefix}-popover`, {cssSelector: selector})
   } else {
     inputEvents.keyup(e)
+  }
+}
+
+const onKeydownPreventClick = e => {
+  if (e && isMonthNavBtn(e.target) && isSpaceOrEnter(e.key)) {
+    e.preventDefault()
   }
 }
 
@@ -293,25 +310,21 @@ const onTransitionStart = () => {
 }
 
 const onUpdateFocus = (hasFocus, inputEvents) => {
-  const el = document.getElementById(inputId.value)
+  const el = document.getElementById(inputId)
   const event = {
     relatedTarget: hasFocus ? null : document.getElementById(props.containerId),
     srcElement: el,
     target: el,
     type: hasFocus ? 'focusin' : 'focusout'
   }
+  dateInputEvents.value = inputEvents
   if (hasFocus) {
     inputEvents.focusin(event)
   } else {
     inputEvents.focusout(event)
   }
 }
-
-const onInput = (event, inputEvents) => {
-  inputEvents.input(event)
-}
 </script>
-
 
 <style scoped>
 .custom-text-field {
@@ -321,7 +334,6 @@ const onInput = (event, inputEvents) => {
   padding: .375rem .75rem;
   position: relative;
   transition: border-color 0.3s;
-  width: 150px;
   &:focus-within {
     --v-field-border-width: 1.875px;
     --v-field-border-opacity: 1;
@@ -343,23 +355,19 @@ const onInput = (event, inputEvents) => {
 .custom-text-field input::placeholder {
   color: rgba(var(--v-theme-on-surface), var(--v-medium-emphasis-opacity));
 }
-.custom-text-field .clear-button {
-  align-items: center;
+.clear-button {
   background: transparent;
   border: none;
+  border-radius: 100%;
   cursor: pointer;
-  display: flex;
-  justify-content: center;
   padding: 4px;
+  position: absolute;
+  right: 4px;
+  top: 4px;
   &:disabled {
     cursor: not-allowed;
     opacity: var(--v-disabled-opacity);
   }
-}
-.custom-text-field .clear-icon {
-  width: 20px;
-  height: 20px;
-  color: #999; /* Icon color */
 }
 .custom-text-field.error--text {
   border-color: rgb(var(--v-theme-error));
@@ -367,6 +375,9 @@ const onInput = (event, inputEvents) => {
 .custom-text-field.disabled {
   cursor: not-allowed;
   opacity: var(--v-disabled-opacity);
+}
+.date-picker {
+  width: 150px;
 }
 </style>
 
