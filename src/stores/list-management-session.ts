@@ -107,7 +107,7 @@ export const useListManagementStore = defineStore('listManagement', {
     },
     deleteEvaluationType() {
       this.disableControls = true
-      return new Promise<Object>(resolve => {
+      return new Promise<object>(resolve => {
         return deleteEvaluationType(this.itemToDelete.name).then(() => {
           $_refreshEvaluationTypes()
           resolve(this.itemToDelete)
@@ -119,7 +119,7 @@ export const useListManagementStore = defineStore('listManagement', {
     },
     deleteInstructor() {
       this.disableControls = true
-      return new Promise<Object>(resolve => {
+      return new Promise<object>(resolve => {
         return deleteInstructor(this.itemToDelete.uid).then(() => {
           $_refreshInstructors()
           resolve(this.itemToDelete)

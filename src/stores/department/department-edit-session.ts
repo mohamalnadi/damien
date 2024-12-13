@@ -43,6 +43,11 @@ export type Department = {
 }
 
 export type DepartmentForm = {
+  id: number,
+  name: string,
+  createdAt: string,
+  updatedAt: string,
+  deletedAt: string,
 }
 
 const $_decorateEvaluation = (e: any, allEvaluations: any[]) => {
@@ -113,7 +118,7 @@ const $_decorateEvaluation = (e: any, allEvaluations: any[]) => {
 }
 
 const $_refresh = (departmentId: number) => {
-  return new Promise<Object>(resolve => {
+  return new Promise<object>(resolve => {
     const termId = useContextStore().selectedTermId || useContextStore().config.currentTermId
     getDepartment(departmentId, termId).then((department: any) => {
       const departmentStore = useDepartmentStore()
@@ -216,7 +221,7 @@ export const useDepartmentStore = defineStore('department', {
       this.department = undefined
       this.activeDepartmentForms = reject(config.departmentForms, 'deletedAt')
       this.allDepartmentForms = config.departmentForms
-      return new Promise<Object>(resolve => {
+      return new Promise<object>(resolve => {
         $_refresh(departmentId).then(department => {
           useDepartmentStore().updateSelectedEvaluationIds()
           resolve(department)
@@ -224,7 +229,7 @@ export const useDepartmentStore = defineStore('department', {
       })
     },
     refreshAll() {
-      return new Promise<Object>(resolve => {
+      return new Promise<object>(resolve => {
         $_refresh(get(this.department, 'id', NaN)).then(resolve)
       })
     },
@@ -302,7 +307,7 @@ export const useDepartmentStore = defineStore('department', {
     },
     updateContact(contact: any) {
       this.disableControls = true
-      return new Promise<Object>(resolve => {
+      return new Promise<object>(resolve => {
         const departmentId = get(this.department, 'id', NaN)
         updateContact(departmentId, contact).then(() => {
           $_refresh(departmentId).then(resolve)
@@ -311,7 +316,7 @@ export const useDepartmentStore = defineStore('department', {
     },
     updateNote(note: any, termId: string) {
       this.disableControls = true
-      return new Promise<Object>(resolve => {
+      return new Promise<object>(resolve => {
         const departmentId = get(this.department, 'id', NaN)
         updateDepartmentNote(departmentId, note, termId).then(() => {
           $_refresh(departmentId).then(resolve)

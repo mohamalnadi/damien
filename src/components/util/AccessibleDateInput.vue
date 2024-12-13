@@ -222,7 +222,7 @@ const onClickClear = (e, inputEvents) => {
     inputEvents.change(e)
     alertScreenReader('Cleared')
     putFocusNextTick(inputId.value)
-    model.value = null
+    model.value = undefined
   }
 }
 
@@ -300,7 +300,11 @@ const onUpdateFocus = (hasFocus, inputEvents) => {
     target: el,
     type: hasFocus ? 'focusin' : 'focusout'
   }
-  hasFocus ? inputEvents.focusin(event) : inputEvents.focusout(event)
+  if (hasFocus) {
+    inputEvents.focusin(event)
+  } else {
+    inputEvents.focusout(event)
+  }
 }
 
 const onInput = (event, inputEvents) => {

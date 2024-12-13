@@ -183,7 +183,7 @@ const allDepartmentsSelected = computed(() => {
   return !!(size(selectedDepartmentIds.value) && size(selectedDepartmentIds.value) === size(departments.value))
 })
 const notificationRecipients = computed(() => {
-  let recipients = []
+  const recipients = []
   each(departments.value, d => {
     if (isSelected(d)) {
       const departmentRecipients = _filter(d.contacts, 'canReceiveCommunications')
