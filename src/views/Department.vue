@@ -12,7 +12,7 @@
         <TermSelect :after-select="refresh" :term-ids="get(department, 'enrolledTerms')" />
       </template>
     </PageHeader>
-    <div v-if="!currentUser.isAdmin" class="mb-2">
+    <div v-if="!currentUser.isAdmin && currentUser.departments.length > 1" class="mb-2">
       <v-menu rounded="lg">
         <template #activator="{props: defineProps}">
           <v-btn
@@ -25,7 +25,7 @@
         </template>
         <v-list>
           <template
-            v-for="option in currentUser.departments"
+            v-for="option in sortBy(currentUser.departments, 'name')"
             :key="option.id"
           >
             <v-list-item
@@ -169,11 +169,11 @@ import TermSelect from '@/components/util/TermSelect'
 import {NUMBER_OF_THE_BEAST, useDepartmentStore} from '@/stores/department/department-edit-session'
 import {alertScreenReader, getCatalogListings, putFocusNextTick} from '@/lib/utils'
 import {computed, onMounted, ref, watch} from 'vue'
-import {filter as _filter, get, includes, isEmpty, size} from 'lodash'
+import {filter as _filter, get, includes, isEmpty, size, sortBy} from 'lodash'
 import {mdiChevronDown, mdiClose, mdiMinusBoxMultipleOutline, mdiPlusBoxMultipleOutline, mdiPlusThick} from '@mdi/js'
 import {storeToRefs} from 'pinia'
 import {useContextStore} from '@/stores/context'
-import {useRoute} from 'vue-router'
+import {useRoute, useRouter} from 'vue-router'
 
 const contextStore = useContextStore()
 const contactDetailsPanel = ref([])
@@ -183,6 +183,7 @@ const departmentStore = useDepartmentStore()
 const isAddingContact = ref(false)
 const isCreatingNotification = ref(false)
 const route = useRoute()
+const router = useRouter()
 const {contacts, department, disableControls, showTheOmenPoster} = storeToRefs(departmentStore)
 
 const notificationRecipients = computed(() => {
@@ -241,9 +242,10 @@ const onClickAddContact = () => {
 
 const refresh = departmentId => {
   contextStore.loadingStart()
+  const id = departmentId || get(route, 'params.departmentId')
+  router.push({path: `/department/${id}`, query: {term: contextStore.selectedTermId}})
   alertScreenReader(`Loading ${contextStore.selectedTermName}`)
-  departmentStore.init(departmentId || get(route, 'params.departmentId')).then(department => {
-    contextStore.setDepartmentLastViewed(department)
+  departmentStore.init(id).then(department => {
     departmentStore.setShowTheOmenPoster(route.query.n === NUMBER_OF_THE_BEAST)
     contextStore.loadingComplete(`${department.deptName} ${contextStore.selectedTermName}`)
   })
