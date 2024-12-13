@@ -44,7 +44,7 @@
         <v-col cols="12" md="6">
           <div class="border-sm pa-3">
             <v-expansion-panels v-model="contactsPanel" flat>
-              <v-expansion-panel>
+              <v-expansion-panel class="bg-transparent">
                 <template #default>
                   <div class="d-flex align-center flex-wrap justify-space-between">
                     <h2 class="ml-2">Department Contacts</h2>
@@ -86,32 +86,31 @@
                       />
                     </v-expansion-panels>
                   </v-expansion-panel-text>
-                  <div v-if="contextStore.currentUser.isAdmin" class="pt-2">
-                    <v-btn
-                      v-if="!isCreatingNotification"
-                      id="open-notification-form-btn"
-                      class="secondary text-capitalize mx-6"
-                      color="primary"
-                      :disabled="disableControls || isEmpty(contacts)"
-                      text="Send notification"
-                      @click="() => isCreatingNotification = true"
-                    />
-                    <NotificationForm
-                      v-if="isCreatingNotification"
-                      :after-send="afterSendNotification"
-                      class="bg-surface-light"
-                      :on-cancel="cancelSendNotification"
-                      :recipients="[notificationRecipients]"
-                    />
-                  </div>
                 </template>
               </v-expansion-panel>
             </v-expansion-panels>
-            <div v-if="currentUser.isAdmin" class="px-2 pt-3">
+            <div v-if="contextStore.currentUser.isAdmin" class="pt-2">
+              <v-btn
+                v-if="!isCreatingNotification"
+                id="open-notification-form-btn"
+                class="ml-2 secondary text-capitalize"
+                color="primary"
+                :disabled="disableControls || isEmpty(contacts)"
+                text="Send notification"
+                @click="() => isCreatingNotification = true"
+              />
+              <NotificationForm
+                v-if="isCreatingNotification"
+                :after-send="afterSendNotification"
+                class="bg-surface-light border-sm"
+                :on-cancel="cancelSendNotification"
+                :recipients="[notificationRecipients]"
+              />
+            </div>
+            <div v-if="currentUser.isAdmin" class="pt-3">
               <v-btn
                 v-if="!isAddingContact"
                 id="add-dept-contact-btn"
-                class="mx-4"
                 color="tertiary"
                 :disabled="disableControls"
                 :prepend-icon="mdiPlusThick"
