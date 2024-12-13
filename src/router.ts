@@ -1,4 +1,3 @@
-import {capitalize, find, get, size, trim} from 'lodash'
 import auth from './auth'
 import BaseView from '@/views/BaseView.vue'
 import Department from '@/views/Department.vue'
@@ -9,6 +8,7 @@ import NannysRoom from '@/views/NannysRoom.vue'
 import NotFound from '@/views/NotFound.vue'
 import StatusBoard from '@/views/StatusBoard.vue'
 import TheMonastery from '@/views/TheMonastery.vue'
+import {capitalize, find, get, size, sortBy, trim} from 'lodash'
 import {createRouter, createWebHistory, RouteRecordRaw} from 'vue-router'
 import {getEvaluationTerm} from '@/api/evaluationTerms'
 import {useContextStore} from '@/stores/context'
@@ -37,7 +37,7 @@ const getDefaultRoute = (routeForUnauthorized?: any) => {
     if (currentUser.isAdmin) {
       route = {path: '/status'}
     } else if (size(currentUser.departments)) {
-      route = {path: `/department/${currentUser.departments[0].id}`}
+      route = {path: `/department/${sortBy(currentUser.departments, 'name')[0].id}`}
     } else {
         route = {
           path: '/error',
