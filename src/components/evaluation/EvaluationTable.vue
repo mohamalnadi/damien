@@ -444,6 +444,7 @@
                     id-prefix="evaluation-start-date"
                     :min-date="minStartDate(evaluation)"
                     :max-date="evaluation.maxStartDate"
+                    :placement="rowIndex > 3 ? 'top' : 'bottom'"
                     :set-value="selectedDate => selectedStartDate = selectedDate"
                   />
                 </div>
@@ -1044,7 +1045,7 @@ tr.border-top-none td {
 .sticky {
   position: sticky;
   top: 60px;
-  z-index: 10;
+  z-index: 11;
 }
 .w-99 {
   width: 99%;
