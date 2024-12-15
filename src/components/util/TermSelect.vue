@@ -95,17 +95,17 @@ const model = computed({
   },
   set(termId) {
     contextStore.setSelectedTerm(termId)
-    props.afterSelect(termId)
+    props.afterSelect()
   }
 })
 
 const onChangeTerm = event => {
   const termId = event.target.value
   if (termId && termId !== query.term) {
+    contextStore.selectTerm(termId)
     router.push({
       query: {...query, term: termId}
     })
-    contextStore.selectTerm(termId)
     putFocusNextTick('select-term')
   }
 }
