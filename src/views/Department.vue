@@ -9,13 +9,17 @@
         </div>
       </div>
       <template #append>
-        <TermSelect :after-select="refresh" :term-ids="get(department, 'enrolledTerms')" />
+        <TermSelect
+          :after-select="refresh"
+          :term-ids="get(department, 'enrolledTerms')"
+        />
       </template>
     </PageHeader>
     <div v-if="!currentUser.isAdmin && currentUser.departments.length > 1" class="mb-2">
       <v-menu rounded="lg">
         <template #activator="{props: defineProps}">
           <v-btn
+            id="change-department-menu"
             :append-icon="mdiChevronDown"
             color="tertiary"
             text="Change Department"
@@ -30,8 +34,8 @@
           >
             <v-list-item
               v-if="option.id !== department.id"
-              :id="`department-${option.id}-menu-item`"
-              @click="() => refresh(option.id)"
+              :id="`department-${option.id}-option`"
+              @click="() => onChangeDepartment(option.id)"
             >
               <v-list-item-title>{{ option.name }}</v-list-item-title>
             </v-list-item>
@@ -179,6 +183,7 @@ const contextStore = useContextStore()
 const contactDetailsPanel = ref([])
 const contactsPanel = ref(undefined)
 const currentUser = contextStore.currentUser
+const departmentId = ref(undefined)
 const departmentStore = useDepartmentStore()
 const isAddingContact = ref(false)
 const isCreatingNotification = ref(false)
@@ -202,7 +207,10 @@ watch(isCreatingNotification, () => {
   departmentStore.setDisableControls(isCreatingNotification.value)
 })
 
-onMounted(() => refresh())
+onMounted(() => {
+  departmentId.value = get(route, 'params.departmentId')
+  refresh()
+})
 
 const afterSaveContact = () => {
   isAddingContact.value = false
@@ -235,17 +243,24 @@ const onCancelAddContact = () => {
   putFocusNextTick('add-dept-contact-btn')
 }
 
+const onChangeDepartment = id => {
+  departmentId.value = id
+  refresh()
+}
+
 const onClickAddContact = () => {
   isAddingContact.value = true
   putFocusNextTick('person-lookup-input')
 }
 
-const refresh = departmentId => {
+const refresh = () => {
   contextStore.loadingStart()
-  const id = departmentId || get(route, 'params.departmentId')
-  router.push({path: `/department/${id}`, query: {term: contextStore.selectedTermId}})
+  router.push({
+    path: `/department/${departmentId.value}`,
+    query: {term: contextStore.selectedTermId}
+  })
   alertScreenReader(`Loading ${contextStore.selectedTermName}`)
-  departmentStore.init(id).then(department => {
+  departmentStore.init(departmentId.value).then(department => {
     departmentStore.setShowTheOmenPoster(route.query.n === NUMBER_OF_THE_BEAST)
     contextStore.loadingComplete(`${department.deptName} ${contextStore.selectedTermName}`)
   })
