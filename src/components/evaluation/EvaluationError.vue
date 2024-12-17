@@ -1,27 +1,24 @@
 <template>
-  <div :class="`evaluation-error text-${color} text-${shade} d-flex my-1`">
-    <v-icon
-      small
-      class="align-self-start mr-1"
-      :class="`text--${shade}`"
-      :color="color"
-      :icon="mdiAlertCircle"
-    />
-    <span>{{ message }}</span>
-  </div>
+  <v-alert
+    class="evaluation-error px-1"
+    density="compact"
+    :text="message"
+    type="error"
+    :variant="hover ? 'flat' : 'text'"
+  >
+    <template #prepend>
+      <v-icon
+        :icon="mdiAlertCircle"
+        size="18"
+      />
+    </template>
+  </v-alert>
 </template>
 
 <script setup>
-import {useTheme} from 'vuetify'
 import {mdiAlertCircle} from '@mdi/js'
-import {computed} from 'vue'
 
-const props = defineProps({
-  color: {
-    default: 'error',
-    required: false,
-    type: String
-  },
+defineProps({
   message: {
     required: true,
     type: String
@@ -31,17 +28,19 @@ const props = defineProps({
     type: Boolean
   }
 })
-
-const theme = useTheme()
-const shade = computed(() => {
-  return theme.global.current.value.dark && !props.hover ? 'lighten-3' : 'darken-1'
-})
 </script>
+
+<style>
+.evaluation-error .v-alert__prepend {
+  margin-inline-end: 8px !important;
+}
+</style>
 
 <style scoped>
 .evaluation-error {
   font-size: 0.9em;
   font-style: italic;
-  line-height: 1.2em;
+  font-weight: 600;
+  line-height: 1.3em;
 }
 </style>

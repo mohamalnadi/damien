@@ -1,5 +1,5 @@
 <template>
-  <div v-if="evaluations.length">
+  <v-container v-if="evaluations.length" class="pa-0" max-width="100%">
     <div
       class="bg-surface-variant elevation-2 py-2 sticky"
       role="search"
@@ -126,7 +126,6 @@
       :items="visibleEvaluations"
       items-per-page="-1"
       :loading="contextStore.loading"
-      must-sort
       :search="searchFilter"
       :sort-by="sortBy"
       @update:current-items="onChangeSearchFilter"
@@ -147,32 +146,32 @@
               :id="rowId(evaluation, rowIndex)"
               class="evaluation-row"
               :class="{
-                'bg-evaluation-row-confirmed': evaluation.id !== editRowId && evaluation.status === 'confirmed',
-                'bg-evaluation-row-ignore text-muted': hoverId !== evaluation.id && evaluation.id !== editRowId && evaluation.status === 'ignore',
+                'bg-evaluation-done': evaluation.id !== editRowId && evaluation.status === 'confirmed',
+                'bg-evaluation-ignore text-muted': hoverId !== evaluation.id && evaluation.id !== editRowId && evaluation.status === 'ignore',
                 'bg-secondary text-white border-bottom-none': evaluation.id === editRowId,
-                'bg-evaluation-row-review': evaluation.id !== editRowId && evaluation.status === 'review',
-                'bg-evaluation-row-xlisting': evaluation.id !== editRowId && !evaluation.status && (evaluation.crossListedWith || evaluation.roomSharedWith),
+                'bg-evaluation-to-do': evaluation.id !== editRowId && evaluation.status === 'review',
+                'bg-evaluation-xlisting': evaluation.id !== editRowId && !evaluation.status && (evaluation.crossListedWith || evaluation.roomSharedWith),
                 'bg-primary-contrast text-primary': [focusedEditButtonEvaluationId, hoverId].includes(evaluation.id) && !isEditing(evaluation)
               }"
               @mouseenter="() => hoverId = evaluation.id"
               @mouseleave="() => hoverId = null"
             >
               <td v-if="readonly" :id="`evaluation-${rowIndex}-department`" class="align-middle py-1 pl-2">
-                <router-link :to="`/department/${get(evaluation.department, 'id')}`">
+                <router-link :to="`/department/${get(evaluation.department, 'id')}`" class="font-weight-bold">
                   {{ get(evaluation.department, 'name') }}
                 </router-link>
               </td>
               <td
                 v-if="!readonly && allowEdits && !(allowEdits && isEditing(evaluation))"
                 :id="`evaluation-${rowIndex}-select`"
-                class="align-middle text-center pr-1 pl-2"
+                class="align-middle pl-1 pr-5"
               >
                 <v-checkbox
                   v-if="!isEditing(evaluation)"
                   :id="`evaluation-${rowIndex}-checkbox`"
                   :aria-label="`${evaluation.subjectArea} ${evaluation.catalogId} ${selectedEvaluationIds.includes(evaluation.id) ? '' : 'not '}selected`"
-                  class="pr-1"
                   :color="`${hoverId === evaluation.id ? 'primary' : 'tertiary'}`"
+                  class="d-flex justify-center"
                   :disabled="editRowId === evaluation.id"
                   hide-details
                   :model-value="evaluation.isSelected"
@@ -183,34 +182,38 @@
               <td
                 :id="`evaluation-${rowIndex}-status`"
                 :class="{'align-middle position-relative': !isEditing(evaluation)}"
-                class="px-1"
+                class="align-middle pl-1 pr-4"
                 :colspan="allowEdits && isEditing(evaluation) ? 2 : 1"
               >
-                <div
+                <v-chip
                   v-if="isStatusVisible(evaluation)"
-                  class="pill mx-auto"
+                  :key="rowIndex"
+                  class="mx-auto px-1 status-label text-caption"
                   :class="{
-                    'pill-confirmed': evaluation.status === 'confirmed',
-                    'pill-ignore': evaluation.status === 'ignore',
-                    'pill-review': evaluation.status === 'review',
+                    'bg-evaluation-done-label': evaluation.status === 'confirmed',
+                    'bg-evaluation-ignore-label': evaluation.status === 'ignore',
+                    'bg-evaluation-to-do-label': evaluation.status === 'review',
                     'sr-only': hoverId === evaluation.id && allowEdits && !readonly
                   }"
                 >
                   {{ displayStatus(evaluation) }}
-                </div>
+                </v-chip>
                 <div
                   v-if="allowEdits && !isEditing(evaluation) && (!readonly || !evaluation.status)"
-                  class="pill pill-invisible mx-auto"
+                  class="pill-invisible mx-auto"
                 >
                   <v-btn
                     :id="`edit-evaluation-${evaluation.id}-btn`"
-                    class="text-uppercase"
+                    class="mx-auto px-1 text-uppercase"
                     :class="{'sr-only': ![focusedEditButtonEvaluationId, hoverId].includes(evaluation.id), 'focus-btn': evaluation.id === focusedEditButtonEvaluationId}"
                     color="primary"
                     block
                     :disabled="!allowEdits"
+                    max-width="150"
                     text="Edit"
                     variant="text"
+                    min-width="54"
+                    width="100%"
                     @blur="() => focusedEditButtonEvaluationId = null"
                     @click="() => onEditEvaluation(evaluation)"
                     @focus="() => focusedEditButtonEvaluationId = evaluation.id"
@@ -218,7 +221,7 @@
                 </div>
                 <div v-if="allowEdits && isEditing(evaluation)" class="pl-2 py-2 select-evaluation-status">
                   <label for="select-evaluation-status">
-                    Status:
+                    Status
                   </label>
                   <select
                     id="select-evaluation-status"
@@ -253,7 +256,7 @@
               </td>
               <td
                 :id="`evaluation-${rowIndex}-courseNumber`"
-                class="align-middle evaluation-course-number px-1"
+                class="align-middle px-1 td-courseNumber"
                 :class="{'font-weight-bold pt-5': isEditing(evaluation)}"
               >
                 {{ evaluation.courseNumber }}
@@ -267,12 +270,8 @@
                 </div>
               </td>
               <td
-                class="evaluation-course-name px-1"
-                :class="{
-                  'font-weight-bold pt-5': isEditing(evaluation),
-                  'align-middle': !isEditing(evaluation),
-                  'pt-2': !evaluation.instructor && isEditing(evaluation) && allowEdits
-                }"
+                class="align-middle px-1 td-courseName"
+                :class="{'font-weight-bold': isEditing(evaluation)}"
               >
                 <label :id="`evaluation-${rowIndex}-courseName`" :for="isEditing(evaluation) ? undefined : `evaluation-${rowIndex}-checkbox`">
                   {{ evaluation.subjectArea }}
@@ -286,8 +285,8 @@
               </td>
               <td
                 :id="`evaluation-${rowIndex}-instructor`"
-                class="evaluation-instructor px-1 align-middle"
-                :class="{'font-weight-bold py-2': isEditing(evaluation)}"
+                class="px-1 align-middle td-instructor"
+                :class="{'font-weight-bold': isEditing(evaluation)}"
               >
                 <div v-if="evaluation.instructor">
                   {{ evaluation.instructor.firstName }}
@@ -326,8 +325,7 @@
               </td>
               <td
                 :id="`evaluation-${rowIndex}-departmentForm`"
-                class="evaluation-department-form px-1"
-                :class="{'align-middle': !isEditing(evaluation), 'py-2': isEditing(evaluation)}"
+                class="align-middle px-1"
               >
                 <div v-if="evaluation.departmentForm && !isEditing(evaluation)">
                   {{ evaluation.departmentForm.name }}
@@ -347,7 +345,7 @@
                 />
                 <div v-if="allowEdits && isEditing(evaluation)">
                   <label id="select-department-form-label" for="select-department-form">
-                    Department Form:
+                    Department Form
                   </label>
                   <select
                     id="select-department-form"
@@ -361,8 +359,7 @@
               </td>
               <td
                 :id="`evaluation-${rowIndex}-evaluationType`"
-                class="evaluation-type px-1"
-                :class="{'align-middle': !isEditing(evaluation), 'py-2': isEditing(evaluation)}"
+                class="align-middle px-1"
               >
                 <div v-if="evaluation.evaluationType && !isEditing(evaluation)">
                   {{ evaluation.evaluationType.name }}
@@ -382,7 +379,7 @@
                 />
                 <div v-if="allowEdits && isEditing(evaluation)">
                   <label id="select-evaluation-type-label" for="select-evaluation-type">
-                    Evaluation Type:
+                    Evaluation Type
                   </label>
                   <select
                     id="select-evaluation-type"
@@ -410,11 +407,10 @@
               </td>
               <td
                 :id="`evaluation-${rowIndex}-period`"
-                class="evaluation-period px-1"
-                :class="{'align-middle': !isEditing(evaluation), 'py-2': isEditing(evaluation)}"
+                class="align-middle px-1"
               >
                 <div v-if="evaluation.startDate && !isEditing(evaluation)">
-                  <div class="text-no-wrap">
+                  <div>
                     {{ toFormatFromJsDate(evaluation.startDate, 'LL/dd/yyyy') }} -
                     {{ toFormatFromJsDate(evaluation.endDate, 'LL/dd/yyyy') }}
                   </div>
@@ -431,7 +427,7 @@
                 </div>
                 <div v-if="allowEdits && isEditing(evaluation)" class="evaluation-period-edit">
                   <label for="evaluation-start-date-input">
-                    Start date:
+                    Start date
                   </label>
                   <AccessibleDateInput
                     aria-label="Select Date"
@@ -533,7 +529,7 @@
         </v-card-actions>
       </v-card>
     </v-dialog>
-  </div>
+  </v-container>
   <v-container v-if="!evaluations.length" class="no-eligible-sections mt-3">
     <v-row>
       <v-col align-self="center">
@@ -649,20 +645,20 @@ watch(selectedFilterTypes, types => {
 
 onMounted(() => {
   evaluationHeaders.value = [
-    {key: 'status', class: 'pl-4 pr-1 text-no-wrap', headerProps: {justifyItems: 'center', minWidth: '115px', width: '10%'}, sortable: true, title: 'Status', value: 'status'},
-    {key: 'lastUpdated', class: 'px-1 text-no-wrap', headerProps: {width: '5%'}, sortable: true, title: 'Last Updated', value: 'lastUpdated'},
-    {key: 'courseNumber', class: 'px-1 text-no-wrap', headerProps: {width: '5%'}, sortable: true, title: 'Course Number', value: 'sortableCourseNumber'},
-    {key: 'courseName', class: 'px-1 course-name', headerProps: {width: '20%'}, sortable: true, title: 'Course Name', value: 'sortableCourseName'},
-    {key: 'instructor', class: 'px-1 text-no-wrap', headerProps: {width: '20%'}, sortable: true, title: 'Instructor', value: 'sortableInstructor'},
-    {key: 'departmentForm', class: 'px-1 text-start', headerProps: {width: '10%'}, sortable: true, title: 'Department Form', value: 'departmentForm.name'},
-    {key: 'evaluationType', class: 'px-1 text-start', headerProps: {width: '10%'}, sortable: true, title: 'Evaluation Type', value: 'evaluationType.name'},
-    {key: 'startDate', class: 'px-1 text-no-wrap', headerProps: {width: '15%'}, sortable: true, title: 'Evaluation Period', value: 'startDate'}
+    {key: 'status', class: 'text-no-wrap', headerProps: {justifyItems: 'center', minWidth: '5rem', width: '7%'}, sortable: true, title: 'Status', value: 'status'},
+    {key: 'lastUpdated', class: 'text-no-wrap', headerProps: {minWidth: '5.63rem', width: '5%'}, sortable: true, title: 'Last Updated', value: 'lastUpdated'},
+    {key: 'courseNumber', class: 'text-no-wrap', headerProps: {minWidth: '2.5rem', width: '5%'}, sortable: true, title: 'Course Number', value: 'sortableCourseNumber'},
+    {key: 'courseName', headerProps: {minWidth: '6.25rem', width: '25%'}, sortable: true, title: 'Course Name', value: 'sortableCourseName'},
+    {key: 'instructor', headerProps: {minWidth: '5rem', width: '20%'}, sortable: true, title: 'Instructor', value: 'sortableInstructor'},
+    {key: 'departmentForm', class: 'text-start', headerProps: {minWidth: '6.25rem', width: '10%'}, sortable: true, title: 'Department Form', value: 'departmentForm.name'},
+    {key: 'evaluationType', class: 'text-start', headerProps: {minWidth: '6.25rem', width: '10%'}, sortable: true, title: 'Evaluation Type', value: 'evaluationType.name'},
+    {key: 'startDate', class: 'text-no-wrap', headerProps: {minWidth: '6.88', width: '15%'}, sortable: true, title: 'Evaluation Period', value: 'startDate'}
   ]
   if (props.readonly) {
-    evaluationHeaders.value.unshift({key: 'departmentId', class: 'text-no-wrap pl-2 pr-1', sortable: true, title: 'Department', value: 'department.id'})
+    evaluationHeaders.value.unshift({key: 'departmentId', class: 'pl-1 text-no-wrap', sortable: true, title: 'Department', value: 'department.id'})
   } else if (allowEdits.value) {
     evaluationHeaders.value.unshift(
-      {key: 'select', class: 'text-no-wrap pl-2 pr-1', headerProps: {justifyItems: 'center', width: '5%'}, sortable: true, title: 'Select', value: 'isSelected'}
+      {key: 'select', class: 'pl-1 text-no-wrap', headerProps: {justifyItems: 'center', width: '3%'}, sortable: true, title: 'Select', value: 'isSelected'}
     )
   }
   departmentForms.value = [{id: null, name: 'Revert'}].concat(departmentStore.activeDepartmentForms)
@@ -728,7 +724,7 @@ const customFilter = (value, search, item) => {
 
 const displayStatus = evaluation => {
   if (evaluation.status === 'review') {
-    return 'To Do'
+    return 'To-Do'
   } else if (evaluation.status === 'confirmed') {
     return 'Done'
   } else {
@@ -949,27 +945,11 @@ tr.border-top-none td {
   position: relative;
   top: 2px;
 }
-.evaluation-course-name {
-  min-width: 200px;
-}
-.evaluation-course-number {
-  min-width: 115px;
-}
-.evaluation-department-form {
-  min-width: 155px;
-}
 .evaluation-form-btn {
   width: 150px;
 }
-.evaluation-instructor {
-  min-width: 175px;
-}
-.evaluation-last-updated {
-  min-width: 100px;
-}
-.evaluation-period-edit {
-  width: 166px;
-  max-width: 166px;
+.evaluation-form-btn-cancel {
+  color: rgba(var(--v-theme-on-surface),var(--v-high-emphasis-opacity)) !important;
 }
 .evaluation-row {
   vertical-align: top;
@@ -993,12 +973,9 @@ tr.border-top-none td {
 .evaluation-row.evaluation-row-leave-active {
   position: absolute;
 }
-.evaluation-type {
-  min-width: 145px;
-}
 .instructor-lookup {
   max-width: 300px !important;
-  min-width: 168px !important;
+  min-width: 5rem !important;
 }
 .no-eligible-sections {
   font-size: 20px;
@@ -1016,41 +993,48 @@ tr.border-top-none td {
   text-transform: uppercase;
   width: 90px;
 }
-.pill-confirmed {
-  background-color: #176190;
-}
-.pill-ignore {
-  background-color: #666;
-}
 .pill-invisible {
   border: none;
   padding: 0;
-}
-.pill-review {
-  background-color: #478047;
 }
 .select-all-evals {
   height: 36px;
   width: 6.5rem;
 }
 .select-evaluation-status {
-  width: 80%;
+  min-width: 5.5rem;
 }
 .status-filter {
   height: fit-content !important;
+}
+.status-label {
+  border-radius: 4px;
+  display: flex;
+  font-weight: 700;
+  justify-content: center;
+  max-width: 150px;
+  min-width: 54px;
+  text-transform: uppercase !important;
+  width: 100%;
 }
 .sticky {
   position: sticky;
   top: 60px;
   z-index: 11;
 }
+.td-courseNumber {
+  word-break: break-word;
+}
+.td-courseName {
+  word-break: break-word;
+}
+.td-instructor {
+  word-break: break-word;
+}
 .w-99 {
   width: 99%;
 }
 .xlisting-note {
   font-size: 0.8em;
-}
-.evaluation-form-btn-cancel {
-  color: rgba(var(--v-theme-on-surface),var(--v-high-emphasis-opacity)) !important;
 }
 </style>
