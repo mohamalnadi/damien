@@ -12,10 +12,10 @@
 .custom-text-field, select {
   --v-field-border-opacity: 0.38;
   --v-field-border-width: 1px;
+  background-color: rgba(var(--v-theme-surface)) !important;
   border: var(--v-field-border-width) solid rgba(var(--v-border-color), var(--v-field-border-opacity)) !important;
   border-radius: .25rem;
-  box-sizing: border-box;
-  color: rgba(var(--v-theme-on-surface),var(--v-high-emphasis-opacity));
+  color: rgba(var(--v-theme-on-surface), var(--v-high-emphasis-opacity));
   display: inline-block;
   font-size: 1rem !important;
   font-weight: 400 !important;
@@ -25,6 +25,19 @@
   width: 100%;
   &:hover:not(:disabled) {
     --v-field-border-opacity: var(--v-high-emphasis-opacity);
+  }
+  &:focus {
+    --v-field-border-width: 1.875px;
+    --v-field-border-opacity: 1;
+    border: var(--v-field-border-width) solid rgba(var(--v-border-color), var(--v-field-border-opacity)) !important;
+    outline: 0;
+    box-shadow: inset 0 -1.3em 1em 0 rgba(0, 0, 0, 0.02);
+  }
+  &:disabled {
+    color: rgba(var(--v-theme-on-surface), var(--v-medium-emphasis-opacity));
+    cursor: not-allowed;
+    opacity: var(--v-disabled-opacity);
+    pointer-events: none;
   }
 }
 .datepicker-input {
@@ -209,17 +222,6 @@ select {
   background-size: auto 15%;
   box-shadow: inset 0 -1.3em 1em 0 rgba(0, 0, 0, 0.02);
   padding: .375rem 1.75rem .375rem .75rem;
-  &:focus {
-    --v-field-border-width: 1.875px;
-    --v-field-border-opacity: 1;
-    outline: 0;
-    height: calc(100% + (.875px * 2));
-    width: calc(100% + (.875px / 2));
-  }
-  &:disabled {
-    cursor: not-allowed;
-    opacity: var(--v-disabled-opacity);
-  }
 }
 svg {
   fill: currentColor;

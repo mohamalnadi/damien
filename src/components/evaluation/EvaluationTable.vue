@@ -181,8 +181,8 @@
               </td>
               <td
                 :id="`evaluation-${rowIndex}-status`"
-                :class="{'align-middle position-relative': !isEditing(evaluation)}"
-                class="align-middle pl-1 pr-4"
+                :class="{'align-middle': !isEditing(evaluation)}"
+                class="pl-1 pr-4"
                 :colspan="allowEdits && isEditing(evaluation) ? 2 : 1"
               >
                 <v-chip
@@ -219,14 +219,14 @@
                     @focus="() => focusedEditButtonEvaluationId = evaluation.id"
                   />
                 </div>
-                <div v-if="allowEdits && isEditing(evaluation)" class="pl-2 py-2 select-evaluation-status">
+                <div v-if="allowEdits && isEditing(evaluation)" class="pl-2 pt-2 select-evaluation-status">
                   <label for="select-evaluation-status">
                     Status
                   </label>
                   <select
                     id="select-evaluation-status"
                     v-model="selectedEvaluationStatus"
-                    class="d-block mx-auto bg-white v-theme--light w-99"
+                    class="d-block mx-auto v-theme--light w-99"
                     :disabled="isSaving"
                   >
                     <option
@@ -249,15 +249,21 @@
               </td>
               <td
                 :id="`evaluation-${rowIndex}-lastUpdated`"
-                class="align-middle evaluation-last-updated px-1"
-                :class="{'font-weight-bold pt-5': isEditing(evaluation)}"
+                class="px-1"
+                :class="{
+                  'font-weight-bold pt-9': isEditing(evaluation),
+                  'align-middle': !isEditing(evaluation)
+                }"
               >
                 {{ toFormatFromJsDate(evaluation.lastUpdated, 'LL/dd/yyyy') }}
               </td>
               <td
                 :id="`evaluation-${rowIndex}-courseNumber`"
-                class="align-middle px-1 td-courseNumber"
-                :class="{'font-weight-bold pt-5': isEditing(evaluation)}"
+                class="px-1 td-courseNumber"
+                :class="{
+                  'font-weight-bold pt-9': isEditing(evaluation),
+                  'align-middle': !isEditing(evaluation)
+                }"
               >
                 {{ evaluation.courseNumber }}
                 <div v-if="evaluation.crossListedWith" class="xlisting-note">
@@ -270,8 +276,11 @@
                 </div>
               </td>
               <td
-                class="align-middle px-1 td-courseName"
-                :class="{'font-weight-bold': isEditing(evaluation)}"
+                class="px-1 td-courseName"
+                :class="{
+                  'font-weight-bold pt-2': isEditing(evaluation),
+                  'align-middle': !isEditing(evaluation)
+                }"
               >
                 <label :id="`evaluation-${rowIndex}-courseName`" :for="isEditing(evaluation) ? undefined : `evaluation-${rowIndex}-checkbox`">
                   {{ evaluation.subjectArea }}
@@ -285,8 +294,11 @@
               </td>
               <td
                 :id="`evaluation-${rowIndex}-instructor`"
-                class="px-1 align-middle td-instructor"
-                :class="{'font-weight-bold': isEditing(evaluation)}"
+                class="px-1 td-instructor"
+                :class="{
+                  'font-weight-bold pt-2': isEditing(evaluation),
+                  'align-middle': !isEditing(evaluation)
+                }"
               >
                 <div v-if="evaluation.instructor">
                   {{ evaluation.instructor.firstName }}
@@ -311,9 +323,8 @@
                     label="Instructor"
                     list-label="Suggested Instructors List"
                     :on-select-result="selectInstructor"
-                    variant="solo"
                   />
-                  <div v-if="pendingInstructor" class="position-absolute pt-1">
+                  <div v-if="pendingInstructor" class="pt-1">
                     <div>
                       {{ pendingInstructor.firstName }} {{ pendingInstructor.lastName }} ({{ pendingInstructor.uid }})
                     </div>
@@ -325,7 +336,11 @@
               </td>
               <td
                 :id="`evaluation-${rowIndex}-departmentForm`"
-                class="align-middle px-1"
+                class="px-1"
+                :class="{
+                  'pt-2': isEditing(evaluation),
+                  'align-middle': !isEditing(evaluation)
+                }"
               >
                 <div v-if="evaluation.departmentForm && !isEditing(evaluation)">
                   {{ evaluation.departmentForm.name }}
@@ -350,7 +365,7 @@
                   <select
                     id="select-department-form"
                     v-model="selectedDepartmentForm"
-                    class="bg-white v-theme--light"
+                    class="v-theme--light"
                     :disabled="isSaving"
                   >
                     <option v-for="df in departmentForms" :key="df.id" :value="df.id">{{ df.name }}</option>
@@ -359,7 +374,11 @@
               </td>
               <td
                 :id="`evaluation-${rowIndex}-evaluationType`"
-                class="align-middle px-1"
+                class="px-1"
+                :class="{
+                  'pt-2': isEditing(evaluation),
+                  'align-middle': !isEditing(evaluation)
+                }"
               >
                 <div v-if="evaluation.evaluationType && !isEditing(evaluation)">
                   {{ evaluation.evaluationType.name }}
@@ -384,7 +403,7 @@
                   <select
                     id="select-evaluation-type"
                     v-model="selectedEvaluationType"
-                    class="bg-white v-theme--light"
+                    class="v-theme--light"
                     :disabled="isSaving"
                   >
                     <option
@@ -407,7 +426,11 @@
               </td>
               <td
                 :id="`evaluation-${rowIndex}-period`"
-                class="align-middle px-1"
+                class="px-1"
+                :class="{
+                  'pt-2': isEditing(evaluation),
+                  'align-middle': !isEditing(evaluation)
+                }"
               >
                 <div v-if="evaluation.startDate && !isEditing(evaluation)">
                   <div>
