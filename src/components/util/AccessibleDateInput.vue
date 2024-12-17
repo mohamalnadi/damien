@@ -16,7 +16,7 @@
       @transition-start="() => onTransitionStart"
     >
       <template #default="{ inputValue, inputEvents }">
-        <div class="v-theme--light custom-text-field">
+        <div class="v-theme--light custom-text-field" :class="{'disabled': disabled}">
           <input
             :id="inputId"
             type="text"
@@ -27,7 +27,7 @@
             :aria-invalid="!isValid(inputValue)"
             :aria-required="required"
             autocomplete="off"
-            :class="{ 'error--text': !isValid(inputValue), disabled: disabled }"
+            :class="{'error--text': !isValid(inputValue)}"
             :disabled="disabled"
             maxlength="10"
             placeholder="MM/DD/YYYY"
@@ -329,7 +329,6 @@ const onUpdateFocus = (hasFocus, inputEvents) => {
 <style scoped>
 .custom-text-field {
   align-items: center;
-  background-color: white;
   display: flex;
   padding: .375rem .75rem;
   position: relative;
@@ -348,8 +347,8 @@ const onUpdateFocus = (hasFocus, inputEvents) => {
   padding: 8px 0;
   width: 100%;
   &:disabled {
+    color: rgba(var(--v-theme-on-surface), var(--v-medium-emphasis-opacity));
     cursor: not-allowed;
-    opacity: var(--v-disabled-opacity);
   }
 }
 .custom-text-field input::placeholder {

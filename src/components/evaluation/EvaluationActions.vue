@@ -57,7 +57,7 @@
           <v-col cols="8">
             <select
               id="update-evaluations-select-status"
-              class="bulk-action-form-input bg-white v-theme--light"
+              class="bulk-action-form-input v-theme--light"
               :disabled="disableControls"
               :status="status"
               :value="status"
@@ -78,7 +78,7 @@
           <v-col>
             <select
               id="update-evaluations-select-form"
-              class="bulk-action-form-input bg-white v-theme--light"
+              class="bulk-action-form-input v-theme--light"
               :disabled="disableControls"
               :form="form"
               :value="form"

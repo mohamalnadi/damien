@@ -54,7 +54,7 @@
               <select
                 :id="`${idPrefix}-select-type`"
                 v-model="selectedEvaluationType"
-                class="bulk-action-form-input bg-white v-theme--light"
+                class="bulk-action-form-input v-theme--light"
                 :disabled="disableControls"
               >
                 <option v-for="et in evaluationTypes" :key="et.id" :value="et.id">{{ et.name }}</option>
