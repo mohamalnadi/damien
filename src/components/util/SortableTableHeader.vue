@@ -5,6 +5,7 @@
       :key="column.key"
       :aria-label="column.title"
       :aria-sort="isSorted(column) ? (sortDesc ? 'descending' : 'ascending') : 'none'"
+      class="px-0"
       :class="column.class"
       scope="col"
       :style="column.headerProps"
@@ -65,12 +66,15 @@ defineProps({
 .sort-col-btn {
   height: 28px !important;
   letter-spacing: normal !important;
-  margin-left: -2px;
+  margin: 0 4px 0 -.1em;
   min-width: 0px !important;
-  padding: 0 2px;
+  padding: 0 2px 0 4px;
 }
 </style>
 <style>
+.v-table-sort-btn-override .v-btn__append {
+  margin-inline: 2px 1px !important;
+}
 .v-table-sort-btn-override .v-btn__append .v-icon {
   opacity: 0;
 }

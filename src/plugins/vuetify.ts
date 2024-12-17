@@ -103,6 +103,11 @@ export default createVuetify({
     }
   },
   theme: {
+    variations: {
+      colors: ['error'],
+      lighten: 3,
+      darken: 1
+    },
     themes: {
       light: {
         colors: {
@@ -111,10 +116,13 @@ export default createVuetify({
           background: '#FFF',
           disabled: '#BBCAD4',
           error: '#B71C1C',
-          'evaluation-row-confirmed': '#EBF8FF',
-          'evaluation-row-ignore': '#EBEBEB',
-          'evaluation-row-review': '#F2FFF6',
-          'evaluation-row-xlisting': '#FFFFDD',
+          'evaluation-done': '#EBF8FF',
+          'evaluation-done-label': '#176190',
+          'evaluation-ignore': '#EBEBEB',
+          'evaluation-ignore-label': '#666',
+          'evaluation-to-do': '#F2FFF6',
+          'evaluation-to-do-label': '#478047',
+          'evaluation-xlisting': '#FFFFDD',
           hovered: '#EEE',
           muted: '#606060',
           'on-surface-variant': '#000',
@@ -133,11 +141,14 @@ export default createVuetify({
           anchor: '#F04A00',
           background: '#0D202C',
           disabled: '#BBCAD4',
-          error: '#EF4343',
-          'evaluation-row-confirmed': '#082231',
-          'evaluation-row-ignore': '#2D2D2D',
-          'evaluation-row-review': '#0E1F0E',
-          'evaluation-row-xlisting': '#2D2800',
+          error: '#FF1414',
+          'evaluation-done': '#001C2C',
+          'evaluation-done-label': '#004A75',
+          'evaluation-ignore': '#2D2D2D',
+          'evaluation-ignore-label': '#666666',
+          'evaluation-to-do': '#001E00',
+          'evaluation-to-do-label': '#005400',
+          'evaluation-xlisting': '#2B2600',
           hovered: '#616161',
           muted: '#BDBDBD',
           'on-surface-variant': '#FFF',

@@ -377,7 +377,8 @@ const onUpdateFocus = (hasFocus, inputEvents) => {
   opacity: var(--v-disabled-opacity);
 }
 .date-picker {
-  width: 150px;
+  max-width: 250px;
+  min-width: 7.85rem;
 }
 </style>
 
