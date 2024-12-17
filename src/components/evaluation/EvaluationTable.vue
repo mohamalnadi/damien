@@ -33,10 +33,7 @@
               color="tertiary"
               density="compact"
               :disabled="!searchFilterResults.length"
-              :false-value="!someEvaluationsSelected && !allEvaluationsSelected"
               hide-details
-              :indeterminate="someEvaluationsSelected"
-              :input-value="someEvaluationsSelected || allEvaluationsSelected"
               :model-value="allEvaluationsSelected"
               :ripple="false"
               @change="toggleSelectAll"
@@ -859,7 +856,7 @@ const selectInstructor = instructor => {
 }
 
 const toggleSelectAll = () => {
-  if (allEvaluationsSelected.value || someEvaluationsSelected.value) {
+  if (allEvaluationsSelected.value) {
     departmentStore.deselectAllEvaluations()
     alertScreenReader('All evaluations unselected')
   } else {
