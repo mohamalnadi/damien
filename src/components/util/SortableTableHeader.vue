@@ -29,8 +29,6 @@
 </template>
 
 <script setup>
-import {mdiArrowUp} from '@mdi/js'
-
 defineProps({
   columns: {
     required: true,
@@ -55,7 +53,7 @@ defineProps({
     type: Boolean
   },
   sortIcon: {
-    default: () => mdiArrowUp,
+    default: () => {},
     required: false,
     type: Function
   }
@@ -80,7 +78,9 @@ defineProps({
 }
 .v-table-sort-btn-override:active .v-btn__append .v-icon,
 .v-table-sort-btn-override:hover .v-btn__append .v-icon,
-.v-table-sort-btn-override:focus .v-btn__append .v-icon,
+.v-table-sort-btn-override:focus .v-btn__append .v-icon {
+  opacity: var(--v-disabled-opacity);
+}
 .v-table-sort-btn-override.icon-visible .v-btn__append .v-icon {
   opacity: 1;
 }

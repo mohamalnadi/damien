@@ -32,7 +32,8 @@ defineProps({
 
 <style>
 .evaluation-error .v-alert__prepend {
-  margin-inline-end: 8px !important;
+  margin-inline-end: 4px !important;
+  margin-right: 4px !important;
 }
 </style>
 
@@ -42,5 +43,9 @@ defineProps({
   font-style: italic;
   font-weight: 600;
   line-height: 1.3em;
+  margin-left: -6px;
+  max-width: 12.5rem;
+  min-width: 5.8rem;
+  word-break: normal;
 }
 </style>
