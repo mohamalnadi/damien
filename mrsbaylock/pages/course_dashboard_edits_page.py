@@ -315,12 +315,12 @@ class CourseDashboardEditsPage(CourseDashboards):
     FILTER_IGNORE = (By.ID, 'evaluations-filter-ignore')
 
     def select_filter(self, filter_loc):
-        if 'inactive' in self.element(filter_loc).get_attribute('class'):
+        if 'active' not in self.element(filter_loc).get_attribute('class'):
             self.wait_for_page_and_click(filter_loc)
             time.sleep(2)
 
     def deselect_filter(self, filter_loc):
-        if 'inactive' not in self.element(filter_loc).get_attribute('class'):
+        if 'active' in self.element(filter_loc).get_attribute('class'):
             self.wait_for_element_and_click(filter_loc)
             time.sleep(2)
 
@@ -508,10 +508,11 @@ class CourseDashboardEditsPage(CourseDashboards):
         self.wait_for_page_and_click(self.EVAL_CHANGE_SAVE_BUTTON)
 
     def save_eval_changes(self, evaluation, status=None):
+        today = datetime.date.today()
         self.click_save_eval_changes(evaluation)
         if status == EvaluationStatus.CONFIRMED:
-            started = evaluation.eval_start_date <= datetime.date.today()
-            if started:
+            eval_period_in_progress = evaluation.eval_start_date <= today and evaluation.eval_end_date >= today
+            if eval_period_in_progress:
                 self.proceed_eval_changes()
         self.when_not_present(self.EVAL_CHANGE_SAVE_BUTTON, utils.get_short_timeout())
 

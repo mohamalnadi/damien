@@ -111,7 +111,6 @@ class TestEvalErrors:
     def test_clear_cache(self):
         self.login_page.load_page()
         self.login_page.dev_auth()
-        self.status_board_admin_page.click_list_mgmt()
         self.api_page.refresh_unholy_loch()
 
     def test_log_out(self):
