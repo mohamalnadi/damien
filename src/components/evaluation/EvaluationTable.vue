@@ -310,7 +310,7 @@
                 </div>
                 <EvaluationError
                   v-if="!evaluation.instructor && !isEditing(evaluation) && (evaluation.status === 'review' || evaluation.status === 'confirmed')"
-                  id="error-msg-evaluation-instructor"
+                  :id="`error-msg-evaluation-instructor-${rowIndex}`"
                   :hover="[focusedEditButtonEvaluationId, hoverId].includes(evaluation.id)"
                   message="Instructor required"
                 />
@@ -346,7 +346,7 @@
                   {{ evaluation.departmentForm.name }}
                   <EvaluationError
                     v-for="(conflict, index) in evaluation.conflicts.departmentForm"
-                    :id="`error-msg-evaluation-department-form-conflict-${index}`"
+                    :id="`error-msg-evaluation-department-form-conflict-${rowIndex}-${index}`"
                     :key="index"
                     :hover="[focusedEditButtonEvaluationId, hoverId].includes(evaluation.id)"
                     :message="`Conflicts with value ${conflict.value} from ${conflict.department} department`"
@@ -354,7 +354,7 @@
                 </div>
                 <EvaluationError
                   v-if="!evaluation.departmentForm && !isEditing(evaluation) && (evaluation.status === 'review' || evaluation.status === 'confirmed')"
-                  id="error-msg-evaluation-department-form"
+                  :id="`error-msg-evaluation-department-form-${rowIndex}`"
                   :hover="[focusedEditButtonEvaluationId, hoverId].includes(evaluation.id)"
                   message="Department form required"
                 />
@@ -384,7 +384,7 @@
                   {{ evaluation.evaluationType.name }}
                   <EvaluationError
                     v-for="(conflict, index) in evaluation.conflicts.evaluationType"
-                    :id="`error-msg-evaluation-type-conflict-${index}`"
+                    :id="`error-msg-evaluation-type-conflict-${rowIndex}-${index}`"
                     :key="index"
                     :hover="[focusedEditButtonEvaluationId, hoverId].includes(evaluation.id)"
                     :message="`Conflicts with value ${conflict.value} from ${conflict.department} department`"
@@ -392,7 +392,7 @@
                 </div>
                 <EvaluationError
                   v-if="!evaluation.evaluationType && !isEditing(evaluation) && (evaluation.status === 'review' || evaluation.status === 'confirmed')"
-                  id="error-msg-evaluation-type"
+                  :id="`error-msg-evaluation-type-${rowIndex}`"
                   :hover="[focusedEditButtonEvaluationId, hoverId].includes(evaluation.id)"
                   message="Evaluation type required"
                 />
