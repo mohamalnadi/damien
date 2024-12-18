@@ -152,6 +152,7 @@ onMounted(() => {
       completedText: 'Marked as to-do',
       inProgressText: 'Marking as to-do',
       status: 'review',
+      key: 'review',
       text: 'Mark as to-do'
     },
     confirm: {
@@ -159,6 +160,7 @@ onMounted(() => {
       completedText: 'Marked as done',
       inProgressText: 'Marking as done',
       status: 'confirmed',
+      key: 'confirm',
       text: 'Mark as done'
     },
     unmark: {
@@ -166,6 +168,7 @@ onMounted(() => {
       completedText: 'Unmarked',
       inProgressText: 'Unmarking',
       status: null,
+      key: 'unmark',
       text: 'Unmark'
     },
     ignore: {
@@ -173,12 +176,14 @@ onMounted(() => {
       completedText: 'Ignored',
       inProgressText: 'Ignoring',
       status: 'ignore',
+      key: 'ignore',
       text: 'Ignore'
     },
     duplicate: {
       apply: onClickDuplicate,
       completedText: 'Duplicated',
       inProgressText: 'Duplicating',
+      key: 'duplicate',
       text: 'Duplicate'
     },
     edit: {
@@ -370,7 +375,6 @@ const update = (fields, key) => {
         const selectedRowCount = applyingAction.value.key === 'duplicate' ? ((response.length || 0) / 2) : (response.length || 0)
         const target = `${selectedRowCount} ${selectedRowCount === 1 ? 'row' : 'rows'}`
         alertScreenReader(`${applyingAction.value.completedText} ${target}`)
-        putFocusNextTick('select-all-evals-checkbox')
         reset()
       }).finally(() => {
         isApplying.value = false
