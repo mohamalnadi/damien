@@ -24,6 +24,7 @@ ENHANCEMENTS, OR MODIFICATIONS.
 """
 
 from datetime import date
+from itertools import tee
 
 from flask import current_app as app
 from mrsbaylock.models.evaluation_status import EvaluationStatus
@@ -45,7 +46,8 @@ class TestDeptUser:
     dept_forms = evaluation_utils.get_all_dept_forms()
     dept = evaluation_utils.get_dept_with_listings_or_shares(term, depts)
     evaluations = evaluation_utils.get_evaluations(term, dept, log=True)
-    contact = dept.users[0]
+    single_dept_contacts, multi_dept_contacts = tee((len(user.dept_roles) > 1, user) for user in dept.users)
+    contact = next(multi_dept_contacts)[1]
 
     def test_log_in(self):
         self.login_page.load_page()
@@ -94,26 +96,26 @@ class TestDeptUser:
 
     def test_no_status_page(self):
         self.driver.get(f'{app.config["BASE_URL"]}/status')
-        self.homepage.wait_for_title('404 | Course Evaluations')
+        self.homepage.wait_for_title('Page not found | Course Evaluations')
 
     def test_no_publish_page(self):
         self.driver.get(f'{app.config["BASE_URL"]}/publish?term={self.term.term_id}')
-        self.homepage.wait_for_title('404 | Course Evaluations')
+        self.homepage.wait_for_title('Page not found | Course Evaluations')
 
     def test_no_group_mgmt_page(self):
         self.driver.get(f'{app.config["BASE_URL"]}/departments')
-        self.homepage.wait_for_title('404 | Course Evaluations')
+        self.homepage.wait_for_title('Page not found | Course Evaluations')
 
     def test_no_list_mgmt_page(self):
         self.driver.get(f'{app.config["BASE_URL"]}/lists')
-        self.homepage.wait_for_title('404 | Course Evaluations')
+        self.homepage.wait_for_title('Page not found | Course Evaluations')
 
     def test_foreign_dept_page(self):
         contact_dept_ids = [role.dept_id for role in self.contact.dept_roles]
         foreign_dept = [d for d in self.depts if d.dept_id not in contact_dept_ids][0]
         app.logger.info(f'Hitting dept page for dept id {foreign_dept.dept_id}')
         self.driver.get(f'{app.config["BASE_URL"]}/department/{foreign_dept.dept_id}')
-        self.homepage.wait_for_title('404 | Course Evaluations')
+        self.homepage.wait_for_title('Page not found | Course Evaluations')
 
     def test_api_cache(self):
         self.api_page.hit_cache_clear()

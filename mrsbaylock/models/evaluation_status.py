@@ -41,7 +41,7 @@ class EvaluationStatus(enum.Enum):
     FOR_REVIEW = {
         'db': 'marked',
         'option': 'To-do',
-        'ui': 'TO DO',
+        'ui': 'TO-DO',
     }
     IGNORED = {
         'db': 'ignore',
