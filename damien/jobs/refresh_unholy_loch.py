@@ -111,6 +111,7 @@ def _bg_refresh_unholy_loch(app, publish_before_refresh=False):
                 cache.delete('current_term_id')
                 term_ids = get_refreshable_term_ids()
                 for term_id in term_ids:
+                    app.logger.debug(f'Refreshing unholy loch term {term_id}.')
                     resolved_ddl = resolve_sql_template(template_sql, term_id=term_id)
                     db.session().execute(text(resolved_ddl))
                     refresh_additional_instructors()

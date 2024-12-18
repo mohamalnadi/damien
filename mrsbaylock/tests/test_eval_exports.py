@@ -57,7 +57,6 @@ class TestEvalExports:
     def test_refresh_loch(self):
         self.login_page.load_page()
         self.login_page.dev_auth()
-        self.status_board_admin_page.click_list_mgmt()
         self.api_page.refresh_unholy_loch()
         self.evals.extend(evaluation_utils.get_evaluations(self.term, self.dept, log=True))
 
