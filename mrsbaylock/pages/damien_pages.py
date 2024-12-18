@@ -40,6 +40,8 @@ class DamienPages(Page):
     GRP_MGMT_LINK = (By.ID, 'sidebar-link-departments')
     LIST_MGMT_LINK = (By.ID, 'sidebar-link-settings')
 
+    DEPT_SELECT_MENU_BUTTON = (By.ID, 'change-department-menu')
+
     ADD_CONTACT_LOOKUP_INPUT = (By.ID, 'person-lookup-input')
 
     MENU_BUTTON = (By.ID, 'btn-main-menu')
@@ -101,15 +103,13 @@ class DamienPages(Page):
         app.logger.info('Clicking link to List Mgmt')
         self.wait_for_element_and_click(DamienPages.LIST_MGMT_LINK)
 
-    @staticmethod
-    def contact_dept_link(dept):
-        return By.XPATH, f'//div[contains(@id, "sidebar-link-")][contains(., "{dept.name}")]'
+    def contact_dept_link_loc(self, dept):
+        return By.ID, f'department-{dept.dept_id}-option'
 
     def click_contact_dept_link(self, dept):
-        app.logger.info(f'Clicking link for {dept.name}')
-        self.wait_for_page_and_click(DamienPages.contact_dept_link(dept))
-        time.sleep(0.5)
-        self.mouseover(self.element(DamienPages.MENU_BUTTON))
+        app.logger.info(f'Selecting {dept.name} from contact\'s departments menu')
+        self.wait_for_element_and_click(DamienPages.DEPT_SELECT_MENU_BUTTON)
+        self.wait_for_element_and_click(self.contact_dept_link_loc(dept))
 
     @staticmethod
     def dept_link_loc(dept):

@@ -36,7 +36,7 @@ from selenium.webdriver.support.wait import WebDriverWait as Wait
 class ApiPage(Page):
 
     def hit_cache_clear(self):
-        self.driver.get(f'{app.config["BASE_URL"]}/api/cache/clear')
+        self.driver.get(f'{app.config["BASE_URL_API"]}/api/cache/clear')
 
     def clear_cache(self):
         self.hit_cache_clear()
@@ -45,7 +45,7 @@ class ApiPage(Page):
         )
 
     def hit_refresh_loch(self):
-        self.driver.get(f'{app.config["BASE_URL"]}/api/job/refresh_unholy_loch')
+        self.driver.get(f'{app.config["BASE_URL_API"]}/api/job/refresh_unholy_loch')
 
     def wait_for_refresh_job(self):
         tries = 0
@@ -55,7 +55,7 @@ class ApiPage(Page):
             try:
                 app.logger.info('Checking refresh job status')
                 time.sleep(15)
-                self.driver.get(f'{app.config["BASE_URL"]}/api/job/status')
+                self.driver.get(f'{app.config["BASE_URL_API"]}/api/job/status')
                 self.wait_for_element((By.XPATH, '//*[contains(text(), "status")]'), utils.get_short_timeout())
                 assert self.is_present((By.XPATH, '//*[contains(text(), "done")]'))
                 break

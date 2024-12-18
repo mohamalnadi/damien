@@ -29,7 +29,6 @@
     <div>
       <label for="toggle-term-locked" class="sr-only">
         Evaluation term is {{ contextStore.isSelectedTermLocked ? 'locked' : 'unlocked' }}.
-        Evaluation term is {{ contextStore.isSelectedTermLocked ? 'locked' : 'unlocked' }}.
       </label>
       <v-btn
         id="toggle-term-locked"
@@ -39,7 +38,6 @@
         @click="toggleTermLocked"
       >
         <span class="sr-only">
-          {{ isTogglingLock ? 'Toggling...' : (contextStore.isSelectedTermLocked ? 'Unlock' : 'Lock') }}
           {{ isTogglingLock ? 'Toggling...' : (contextStore.isSelectedTermLocked ? 'Unlock' : 'Lock') }}
         </span>
         <v-progress-circular

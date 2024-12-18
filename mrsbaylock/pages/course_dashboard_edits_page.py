@@ -129,21 +129,25 @@ class CourseDashboardEditsPage(CourseDashboards):
         self.wait_for_element_and_click(CourseDashboardEditsPage.IGNORE_BUTTON)
 
     def bulk_set_row_status(self, evaluations, status, all_evals=False):
-        if all_evals:
-            self.wait_for_element_and_click(self.SELECT_ALL_EVALS_CBX)
+        evals_to_be_updated = [e for e in evaluations if e.status != status]
+        if (len(evals_to_be_updated)):
+            if all_evals:
+                self.wait_for_element_and_click(self.SELECT_ALL_EVALS_CBX)
+            else:
+                for evaluation in evaluations:
+                    app.logger.info(f'Setting CCN {evaluation.ccn} to {status}')
+                    self.click_eval_checkbox(evaluation)
+            if status == EvaluationStatus.FOR_REVIEW:
+                self.click_bulk_to_do_button()
+            elif status == EvaluationStatus.CONFIRMED:
+                self.click_bulk_done_button()
+            elif status == EvaluationStatus.UNMARKED:
+                self.click_bulk_unmark_button()
+            elif status == EvaluationStatus.IGNORED:
+                self.click_bulk_ignore_button()
+            time.sleep(2)
         else:
-            for evaluation in evaluations:
-                app.logger.info(f'Setting CCN {evaluation.ccn} to {status}')
-                self.click_eval_checkbox(evaluation)
-        if status == EvaluationStatus.FOR_REVIEW:
-            self.click_bulk_to_do_button()
-        elif status == EvaluationStatus.CONFIRMED:
-            self.click_bulk_done_button()
-        elif status == EvaluationStatus.UNMARKED:
-            self.click_bulk_unmark_button()
-        elif status == EvaluationStatus.IGNORED:
-            self.click_bulk_ignore_button()
-        time.sleep(2)
+            app.logger.info(f'All evaluations already have {status} status; skipping bulk status update.')
 
     def bulk_mark_for_review(self, evaluations):
         self.bulk_set_row_status(evaluations, EvaluationStatus.FOR_REVIEW)

@@ -32,6 +32,7 @@ ADMIN_PASSWORD = 'secret'
 
 BASE_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
 BASE_URL = 'https://manage-dev.course-evaluations.berkeley.edu'
+BASE_URL_API = 'https://manage-dev.course-evaluations.berkeley.edu'
 
 BROWSER = 'chrome'
 BROWSER_BINARY_PATH = '/path/to/chrome'
