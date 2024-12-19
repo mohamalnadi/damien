@@ -3,7 +3,7 @@
     <PageHeader>
       Publish<span v-if="contextStore.selectedTermName"> &mdash;&nbsp;{{ contextStore.selectedTermName }}</span>
       <template #append>
-        <TermSelect :after-select="refresh" />
+        <TermSelect />
       </template>
     </PageHeader>
     <div v-if="!contextStore.loading">
