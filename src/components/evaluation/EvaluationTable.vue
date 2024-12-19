@@ -32,7 +32,7 @@
             class="select-all-evals my-auto mr-3"
             color="tertiary"
             density="compact"
-            :disabled="!searchFilterResults.length"
+            :disabled="!searchFilterResults.length || disableControls"
             :false-value="!someEvaluationsSelected && !allEvaluationsSelected"
             hide-details
             :indeterminate="someEvaluationsSelected"
@@ -169,7 +169,7 @@
                   :aria-label="`${evaluation.subjectArea} ${evaluation.catalogId} ${selectedEvaluationIds.includes(evaluation.id) ? '' : 'not '}selected`"
                   :color="`${hoverId === evaluation.id ? 'primary' : 'tertiary'}`"
                   class="d-flex justify-center"
-                  :disabled="editRowId === evaluation.id"
+                  :disabled="editRowId === evaluation.id || disableControls"
                   hide-details
                   :model-value="evaluation.isSelected"
                   :ripple="false"
@@ -205,7 +205,7 @@
                     :class="{'sr-only': ![focusedEditButtonEvaluationId, hoverId].includes(evaluation.id), 'focus-btn': evaluation.id === focusedEditButtonEvaluationId}"
                     color="primary"
                     block
-                    :disabled="!allowEdits"
+                    :disabled="!allowEdits || disableControls"
                     max-width="150"
                     text="Edit"
                     variant="text"
