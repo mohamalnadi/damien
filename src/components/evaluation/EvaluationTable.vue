@@ -675,7 +675,7 @@ onMounted(() => {
     {key: 'startDate', class: 'text-no-wrap', headerProps: {minWidth: '6.88', width: '15%'}, sortable: true, title: 'Evaluation Period', value: 'startDate'}
   ]
   if (props.readonly) {
-    evaluationHeaders.value.unshift({key: 'departmentId', class: 'pl-1 text-no-wrap', sortable: true, title: 'Department', value: 'department.id'})
+    evaluationHeaders.value.unshift({key: 'departmentId', class: 'pl-1 text-no-wrap', headerProps: {width: '15%'}, sortable: true, title: 'Department', value: 'department.id'})
   } else if (allowEdits.value) {
     evaluationHeaders.value.unshift(
       {key: 'select', class: 'pl-1 text-no-wrap', headerProps: {justifyItems: 'center', width: '3%'}, sortable: true, title: 'Select', value: 'isSelected'}
