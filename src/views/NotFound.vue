@@ -1,5 +1,5 @@
 <template>
-  <div class="background-fade d-flex justify-space-around">
+  <div class="background-fade d-flex justify-space-around" :class="{'sidebar-offset': get(contextStore, 'currentUser.isAdmin')}">
     <v-card flat class="foreground">
       <span
         aria-live="polite"
@@ -13,6 +13,13 @@
   </div>
 </template>
 
+<script setup>
+import {get} from 'lodash'
+import {useContextStore} from '@/stores/context'
+
+const contextStore = useContextStore()
+</script>
+
 <style scoped>
 .background-fade {
   background: url('@/assets/background_fade.png') no-repeat center center;
@@ -23,16 +30,18 @@
   height: 100%;
   padding: 0px !important;
   position: fixed;
-  top: 50px;
-  left: 26px;
+  top: 60px;
   max-width: unset;
   overflow-y: scroll;
-  width: 100%;
+  width: 100vw;
 }
 .foreground {
   background: transparent;
   max-height: 75%;
   max-width: 1200px;
   width: 90%;
+}
+.sidebar-offset {
+  left: 26px;
 }
 </style>
