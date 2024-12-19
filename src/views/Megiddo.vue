@@ -6,11 +6,11 @@
         <TermSelect />
       </template>
     </PageHeader>
-    <div v-if="!contextStore.loading">
-      <div class="align-start d-flex justify-space-between">
-        <div>
-          <div v-if="size(confirmed)" class="mb-3">
-            <h2 class="text-h6">Rows confirmed for publication</h2>
+    <v-container v-if="!contextStore.loading" class="pa-0" fluid>
+      <v-row>
+        <v-col cols="12" md="6">
+          <div v-if="size(confirmed)" class="pb-3 pt-2">
+            <h2 class="align-with-term-exports">Rows confirmed for publication</h2>
             <ul id="confirmed-list" class="pl-4">
               <li v-for="(department, index) in confirmed" :key="index">
                 {{ department.deptName }} <span class="text-muted">({{ department.count }})</span>
@@ -46,11 +46,12 @@
             size="small"
             @click="onUpdateStatus"
           />
-        </div>
-        <div class="float-right mr-15">
+        </v-col>
+        <v-col>
           <v-expansion-panels
             v-model="exportsPanel"
-            class="term-exports"
+            class="term-exports mr-15"
+            flat
             tile
           >
             <v-expansion-panel class="border-sm">
@@ -87,12 +88,13 @@
               </v-expansion-panel-text>
             </v-expansion-panel>
           </v-expansion-panels>
-        </div>
-      </div>
-      <div class="mt-6">
+        </v-col>
+      </v-row>
+      <div class="pt-6">
+        <h2 class="mb-1">Rows with outstanding errors</h2>
         <EvaluationTable :readonly="true" />
       </div>
-    </div>
+    </v-container>
   </div>
 </template>
 
@@ -188,6 +190,9 @@ const showStatus = termExport => {
 </script>
 
 <style scoped>
+.align-with-term-exports {
+  margin-top: 2px;
+}
 .term-exports {
   min-width: 325px;
 }
