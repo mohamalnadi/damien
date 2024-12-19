@@ -4,7 +4,7 @@
       class="bg-surface-variant elevation-2 py-2 sticky"
       role="search"
     >
-      <div class="align-center d-flex flex-wrap px-5 pt-3" :class="{'pb-2': readonly}">
+      <div class="align-center d-flex flex-wrap px-4 pt-2" :class="{'pb-2': readonly}">
         <v-text-field
           id="evaluation-search-input"
           v-model="searchFilter"
@@ -25,36 +25,33 @@
           :allow-edits="allowEdits"
         />
       </div>
-      <div class="align-center d-flex flex-wrap justify-space-between px-5">
-        <div v-if="!readonly && allowEdits" class="d-flex">
-          <div>
-            <v-checkbox
-              id="select-all-evals-checkbox"
-              class="select-all-evals align-center mt-0 pt-0"
-              color="tertiary"
-              density="compact"
-              :disabled="!searchFilterResults.length"
-              hide-details
-              :model-value="allEvaluationsSelected"
-              :ripple="false"
-              @change="toggleSelectAll"
-            >
-              <template #label>
-                <span
-                  v-if="!someEvaluationsSelected && !allEvaluationsSelected"
-                  class="text-no-wrap pl-1 py-2"
-                  :class="{'sr-only': someEvaluationsSelected || allEvaluationsSelected}"
-                >
-                  {{ someEvaluationsSelected || allEvaluationsSelected ? 'Unselect' : 'Select' }} all
-                </span>
-              </template>
-            </v-checkbox>
-          </div>
+      <div class="align-center d-flex flex-wrap justify-space-between px-4">
+        <div v-if="!readonly && allowEdits" class="d-flex pt-2">
+          <v-checkbox
+            id="select-all-evals-checkbox"
+            class="select-all-evals my-auto mr-3"
+            color="tertiary"
+            density="compact"
+            :disabled="!searchFilterResults.length"
+            :false-value="!someEvaluationsSelected && !allEvaluationsSelected"
+            hide-details
+            :indeterminate="someEvaluationsSelected"
+            :input-value="someEvaluationsSelected || allEvaluationsSelected"
+            :model-value="allEvaluationsSelected"
+            :ripple="false"
+            @update:model-value="toggleSelectAll"
+          >
+            <template #label>
+              <span class="text-no-wrap my-auto pl-1">
+                {{ someEvaluationsSelected || allEvaluationsSelected ? 'Unselect' : 'Select' }} all
+              </span>
+            </template>
+          </v-checkbox>
           <div class="evaluation-actions">
             <EvaluationActions v-if="!readonly" />
           </div>
         </div>
-        <div class="align-center d-flex flex-wrap py-2">
+        <div class="align-center d-flex flex-wrap pt-2 pb-1">
           <div class="mr-2">Show statuses:</div>
           <v-btn-toggle
             v-model="selectedFilterTypes"
@@ -877,12 +874,12 @@ const selectInstructor = instructor => {
 }
 
 const toggleSelectAll = () => {
-  if (allEvaluationsSelected.value) {
+  if (allEvaluationsSelected.value || someEvaluationsSelected.value) {
     departmentStore.deselectAllEvaluations()
     alertScreenReader('All evaluations unselected')
   } else {
-    alertScreenReader('All evaluations selected')
     departmentStore.selectAllEvaluations(searchFilterResults.value, selectedFilterTypes.value)
+    alertScreenReader('All evaluations selected')
   }
 }
 
@@ -1022,6 +1019,7 @@ tr.border-top-none td {
 }
 .select-all-evals {
   height: 36px;
+  margin-left: -3px;
   width: 6.5rem;
 }
 .select-evaluation-status {
