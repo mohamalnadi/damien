@@ -706,36 +706,37 @@ const afterEditEvaluation = evaluation => {
 }
 
 const customFilter = (value, search, item) => {
+  const itemObject = item.raw
   if (!search) {
     return true
   }
   if (!value || typeof value === 'boolean') {
     return false
   }
-  if (value === item.sortableInstructor) {
-    value = item.searchableInstructor
+  if (value === itemObject.sortableInstructor) {
+    value = itemObject.searchableInstructor
   }
-  if (value === item.lastUpdated) {
-    value = toLocaleFromISO(item.lastUpdated, 'LL/dd/yyyy')
+  if (value === itemObject.lastUpdated) {
+    value = toFormatFromJsDate(itemObject.lastUpdated, 'LL/dd/yyyy')
   }
-  if (value === item.sortableCourseName) {
-    value = item.searchableCourseName
+  if (value === itemObject.sortableCourseName) {
+    value = itemObject.searchableCourseName
   }
-  if (value === item.sortableCourseNumber) {
-    value = item.courseNumber
-    if (item.crossListedWith) {
-      value += (' ' + item.crossListedWith.join(', '))
+  if (value === itemObject.sortableCourseNumber) {
+    value = itemObject.courseNumber
+    if (itemObject.crossListedWith) {
+      value += (' ' + itemObject.crossListedWith.join(', '))
     }
     if (item.roomSharedWith) {
-      value += (' ' + item.roomSharedWith.join(', '))
+      value += (' ' + itemObject.roomSharedWith.join(', '))
     }
   }
-  if (value === item.startDate) {
+  if (value === itemObject.startDate) {
     value = [
-      toLocaleFromISO(item.startDate, 'LL/dd/yyyy'),
+      toFormatFromJsDate(itemObject.startDate, 'LL/dd/yyyy'),
       '-',
-      toLocaleFromISO(item.endDate, 'LL/dd/yyyy'),
-      (item.modular ? '2' : '3'),
+      toFormatFromJsDate(itemObject.endDate, 'LL/dd/yyyy'),
+      (itemObject.modular ? '2' : '3'),
       'weeks'
     ].join(' ')
   }
