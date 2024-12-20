@@ -33,14 +33,17 @@
 import {getServiceAnnouncement, updateServiceAnnouncement} from '@/api/config'
 import {onMounted, ref} from 'vue'
 import {trim} from 'lodash'
+import {useContextStore} from '@/stores/context'
 import ProgressButton from '@/components/util/ProgressButton.vue'
 
+const contextStore = useContextStore()
 const isPublished = ref(undefined)
 const isSaving = ref(false)
 const text = ref(undefined)
 
 onMounted(() => {
   getServiceAnnouncement().then(data => {
+    contextStore.setServiceAnnouncement(data)
     text.value = data.text
     isPublished.value = data.isLive
   })
