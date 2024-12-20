@@ -25,7 +25,6 @@ import {VList, VListItem, VListItemAction, VListItemTitle} from 'vuetify/compone
 import {VMain} from 'vuetify/components/VMain'
 import {VMenu} from 'vuetify/components/VMenu'
 import {VNavigationDrawer} from 'vuetify/components/VNavigationDrawer'
-import {VOverlay} from 'vuetify/components/VOverlay'
 import {VProgressCircular} from 'vuetify/components/VProgressCircular'
 import {VRadio} from 'vuetify/components/VRadio'
 import {VRadioGroup} from 'vuetify/components/VRadioGroup'
@@ -71,7 +70,6 @@ export default createVuetify({
     VMain,
     VMenu,
     VNavigationDrawer,
-    VOverlay,
     VProgressCircular,
     VRadio,
     VRadioGroup,
@@ -112,6 +110,7 @@ export default createVuetify({
       light: {
         colors: {
           accent: '#CC4000',
+          alert: '#FA9301',
           anchor: '#CC4000',
           background: '#FFF',
           disabled: '#BBCAD4',
@@ -138,7 +137,8 @@ export default createVuetify({
       dark: {
         colors: {
           accent: '#F04A00',
-          anchor: '#F04A00',
+          alert: '#BB8009',
+          anchor: '#F54E00',
           background: '#0D202C',
           disabled: '#BBCAD4',
           error: '#FF1414',

@@ -201,7 +201,10 @@ input.vs__search:enabled {
 }
 a {
   color: rgb(var(--v-theme-anchor));
-  text-decoration: none !important;
+  text-decoration: none;
+  &:hover {
+    text-decoration: underline;
+  }
 }
 h1 {
   color: rgb(var(--v-theme-title));
@@ -236,7 +239,4 @@ table thead th button {
 }
 ul {
   list-style: none;
-}
-#service-announcement a {
-  color: rgb(var(--v-theme-primary));
 }

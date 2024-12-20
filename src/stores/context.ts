@@ -39,7 +39,10 @@ export const useContextStore = defineStore('context', {
     },
     selectedTermId: undefined as string | undefined,
     selectedTermName: undefined,
-    serviceAnnouncement: undefined,
+    serviceAnnouncement: {
+      text: '',
+      isLive: false
+    },
     snackbar: {
       color: 'primary',
       text: undefined as string | undefined,

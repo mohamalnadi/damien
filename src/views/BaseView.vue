@@ -116,21 +116,7 @@
     <v-main id="content" class="mb-4" :style="`--v-layout-bottom: ${footerHeight}px;`">
       <Snackbar />
       <Spinner v-if="contextStore.loading" />
-      <div
-        v-if="contextStore.serviceAnnouncement && contextStore.serviceAnnouncement.isLive"
-        class="service-announcement"
-      >
-        <pre>
-          <span
-            id="service-announcement"
-            v-linkified
-            class="body-2"
-            aria-live="polite"
-            role="alert"
-            v-html="contextStore.serviceAnnouncement.text"
-          />
-        </pre>
-      </div>
+      <ServiceAnnouncement />
       <router-view :key="stripAnchorRef(route.fullPath)" class="px-4" />
     </v-main>
     <DamienFooter />
@@ -139,6 +125,7 @@
 
 <script setup>
 import DamienFooter from '@/components/util/DamienFooter'
+import ServiceAnnouncement from '@/components/util/ServiceAnnouncement'
 import Snackbar from '@/components/util/Snackbar'
 import Spinner from '@/components/util/Spinner'
 import {alertScreenReader, stripAnchorRef} from '@/lib/utils'
@@ -226,18 +213,5 @@ const toRoute = path => router.push({path})
 }
 .nav-drawer-letter-spacing {
   letter-spacing: 0.1em;
-}
-.service-announcement {
-  background-color: #f0ad4e;
-  color: #000;
-  margin: 0;
-  padding: 10px 15px;
-  position: sticky;
-  top: 56px;
-  width: 100%;
-  z-index: 2;
-}
-pre {
-  white-space: pre-line;
 }
 </style>
