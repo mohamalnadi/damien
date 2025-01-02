@@ -225,17 +225,19 @@
                       />
                     </template>
                     <v-list
-                      bg-color="primary"
+                      bg-color="surface-bright"
                       class="border-sm py-0"
                       rounded="sm"
                     >
                       <v-list-item
+                        base-color="primary"
                         density="compact"
                         @click="() => onEditEvaluation(evaluation)"
                       >
                         <v-list-item-title>Edit</v-list-item-title>
                       </v-list-item>
                       <v-list-item
+                        base-color="primary"
                         density="compact"
                         @click="() => duplicatingEvaluationId = evaluation.id"
                       >

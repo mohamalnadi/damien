@@ -156,6 +156,7 @@ export default createVuetify({
           'primary-contrast': '#94A8B3',
           secondary: '#1C4F72',
           success: '#00953E',
+          'surface-bright': '#B0B0B0',
           'surface-variant': '#171717',
           tertiary: '#80BAE0',
           title: '#1E71A4'
