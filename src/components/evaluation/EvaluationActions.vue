@@ -9,7 +9,7 @@
             class="text-capitalize text-no-wrap mx-0 px-2"
             :disabled="disableControls || !allowEdits || !selectedEvaluationIds.length || isLoading || isInvalidAction(action)"
             variant="text"
-            @click.stop="action.apply(key)"
+            @click.stop="action.apply()"
           >
             <span v-if="!(isLoading && key !== 'duplicate' && applyingAction.key === key)">{{ action.text }}</span>
             <v-progress-circular
@@ -109,13 +109,21 @@ import UpdateEvaluations from '@/components/evaluation/UpdateEvaluations'
 import {EVALUATION_STATUSES, useDepartmentStore} from '@/stores/department/department-edit-session'
 import {alertScreenReader, putFocusNextTick} from '@/lib/utils'
 import {chain, each, every, filter as _filter, get, has, includes, map, uniq} from 'lodash'
-import {computed, onMounted, ref} from 'vue'
+import {computed, inject, onMounted, ref, watch} from 'vue'
 import {mdiAlertCircle} from '@mdi/js'
 import {storeToRefs} from 'pinia'
 import {updateEvaluations} from '@/api/departments'
 import {useContextStore} from '@/stores/context'
 import {validateConfirmable, validateDuplicable, validateMarkAsDone} from '@/stores/department/utils'
 import {DateTime} from 'luxon'
+
+const props = defineProps({
+  reset: {
+    default: () => {},
+    required: false,
+    type: Function
+  }
+})
 
 const departmentStore = useDepartmentStore()
 const {activeDepartmentForms, department, disableControls, evaluations, selectedEvaluationIds} = storeToRefs(departmentStore)
@@ -142,8 +150,18 @@ const allowEdits = computed(() => {
   return currentUser.isAdmin || !useContextStore().isSelectedTermLocked
 })
 const selectedEvaluations = computed(() => {
-  return _filter(evaluations.value, e => selectedEvaluationIds.value.includes(e.id))
+  const filterCriteria = duplicatingEvaluationId.value ? {'id': duplicatingEvaluationId.value} : e => selectedEvaluationIds.value.includes(e.id)
+  return _filter(evaluations.value, filterCriteria)
 })
+
+const duplicatingEvaluationId = inject('duplicatingEvaluationId', undefined)
+
+watch(duplicatingEvaluationId, v => {
+  if (v) {
+    onClickDuplicate()
+  }
+})
+
 onMounted(() => {
   courseActions.value = {
     // TO DO: Clean up dictionary keys and statuses
@@ -197,9 +215,10 @@ onMounted(() => {
 })
 
 const onCancelDuplicate = () => {
+  const nextFocusId = duplicatingEvaluationId.value ? `edit-evaluation-${duplicatingEvaluationId.value}-btn` : 'apply-course-action-btn-duplicate'
   reset()
   alertScreenReader('Canceled duplication.')
-  putFocusNextTick('apply-course-action-btn-duplicate')
+  putFocusNextTick(nextFocusId)
 }
 
 const onCancelEdit = () => {
@@ -337,6 +356,7 @@ const reset = () => {
   isLoading.value = false
   markAsDoneWarning.value = null
   midtermFormAvailable.value = false
+  props.reset()
 }
 
 const showUpdateOptions = () => {
@@ -355,8 +375,9 @@ const showUpdateOptions = () => {
 const update = (fields, key) => {
   disableControls.value = true
   isLoading.value = true
+  const evaluationIds = duplicatingEvaluationId.value ? [duplicatingEvaluationId.value] : selectedEvaluationIds.value
   const selectedCourseNumbers = uniq(evaluations.value
-    .filter(e => selectedEvaluationIds.value.includes(e.id))
+    .filter(e => evaluationIds.includes(e.id))
     .map(e => e.courseNumber))
   const refresh = () => {
     return selectedCourseNumbers.length === 1
@@ -366,7 +387,7 @@ const update = (fields, key) => {
   updateEvaluations(
     department.value.id,
     key,
-    selectedEvaluationIds.value,
+    evaluationIds,
     useContextStore().selectedTermId,
     fields
   ).then(
@@ -375,6 +396,7 @@ const update = (fields, key) => {
         const selectedRowCount = applyingAction.value.key === 'duplicate' ? ((response.length || 0) / 2) : (response.length || 0)
         const target = `${selectedRowCount} ${selectedRowCount === 1 ? 'row' : 'rows'}`
         alertScreenReader(`${applyingAction.value.completedText} ${target}`)
+        putFocusNextTick(duplicatingEvaluationId.value ? `edit-evaluation-${duplicatingEvaluationId.value}-btn` : `apply-course-action-btn-${key}`)
         reset()
       }).finally(() => {
         isApplying.value = false
@@ -392,16 +414,17 @@ const update = (fields, key) => {
 
 const validateAndUpdate = key => {
   let valid = true
-  const target = `${selectedEvaluationIds.value.length || 0} ${selectedEvaluationIds.value.length === 1 ? 'row' : 'rows'}`
+  const evaluationIds = duplicatingEvaluationId.value ? [duplicatingEvaluationId.value] : selectedEvaluationIds.value
+  const target = `${evaluationIds.length || 0} ${evaluationIds.length === 1 ? 'row' : 'rows'}`
   applyingAction.value = courseActions.value[key]
   isApplying.value = true
   alertScreenReader(`${applyingAction.value.inProgressText} ${target}`)
 
   const fields = getEvaluationFieldsForUpdate(key)
   if (key === 'duplicate') {
-    valid = validateDuplicable(selectedEvaluationIds.value, fields)
+    valid = validateDuplicable(evaluationIds, fields)
   } else if (key === 'confirm' || (key === 'edit' && bulkUpdateOptions.value.evaluationStatus === 'confirmed')) {
-    valid = validateConfirmable(selectedEvaluationIds.value, fields)
+    valid = validateConfirmable(evaluationIds, fields)
   }
   if (valid) {
     update(fields, key)

@@ -48,7 +48,7 @@
             </template>
           </v-checkbox>
           <div class="evaluation-actions">
-            <EvaluationActions v-if="!readonly" />
+            <EvaluationActions v-if="!readonly" :reset="() => duplicatingEvaluationId = null" />
           </div>
         </div>
         <div class="align-center d-flex flex-wrap pt-2 pb-1">
@@ -167,8 +167,8 @@
                   v-if="!isEditing(evaluation)"
                   :id="`evaluation-${rowIndex}-checkbox`"
                   :aria-label="`${evaluation.subjectArea} ${evaluation.catalogId} ${selectedEvaluationIds.includes(evaluation.id) ? '' : 'not '}selected`"
-                  :color="`${hoverId === evaluation.id ? 'primary' : 'tertiary'}`"
                   class="d-flex justify-center"
+                  :color="`${[focusedEditButtonEvaluationId, hoverId].includes(evaluation.id) ? 'primary' : 'tertiary'}`"
                   :disabled="editRowId === evaluation.id || disableControls"
                   hide-details
                   :model-value="evaluation.isSelected"
@@ -178,8 +178,11 @@
               </td>
               <td
                 :id="`evaluation-${rowIndex}-status`"
-                :class="{'align-middle': !isEditing(evaluation)}"
-                class="pl-1 pr-4"
+                class="pl-1 pr-3"
+                :class="{
+                  'align-middle': !isEditing(evaluation),
+                  'pr-1': [focusedEditButtonEvaluationId, hoverId].includes(evaluation.id)
+                }"
                 :colspan="allowEdits && isEditing(evaluation) ? 2 : 1"
               >
                 <v-chip
@@ -199,22 +202,47 @@
                   v-if="allowEdits && !isEditing(evaluation) && (!readonly || !evaluation.status)"
                   class="pill-invisible mx-auto"
                 >
-                  <v-btn
-                    :id="`edit-evaluation-${evaluation.id}-btn`"
-                    class="mx-auto px-1 text-uppercase"
-                    :class="{'sr-only': ![focusedEditButtonEvaluationId, hoverId].includes(evaluation.id), 'focus-btn': evaluation.id === focusedEditButtonEvaluationId}"
-                    color="primary"
-                    block
-                    :disabled="!allowEdits || disableControls"
-                    max-width="150"
-                    text="Edit"
-                    variant="text"
-                    min-width="54"
-                    width="100%"
-                    @blur="() => focusedEditButtonEvaluationId = null"
-                    @click="() => onEditEvaluation(evaluation)"
-                    @focus="() => focusedEditButtonEvaluationId = evaluation.id"
-                  />
+                  <v-menu @update:model-value="isOpen => openMenuEvaluationId = (isOpen ? evaluation.id : null)">
+                    <template #activator="{props: menuProps}">
+                      <v-btn
+                        :id="`edit-evaluation-${evaluation.id}-btn`"
+                        :append-icon="mdiChevronDown"
+                        class="mx-auto px-1 text-uppercase evaluation-row-btn"
+                        :class="{
+                          'sr-only': ![focusedEditButtonEvaluationId, hoverId].includes(evaluation.id),
+                          'focus-btn': evaluation.id === focusedEditButtonEvaluationId
+                        }"
+                        color="primary"
+                        :disabled="!allowEdits || disableControls"
+                        max-width="150"
+                        min-width="54"
+                        text="Edit"
+                        variant="text"
+                        width="100%"
+                        v-bind="menuProps"
+                        @blur="() => openMenuEvaluationId === evaluation.id ? noop : focusedEditButtonEvaluationId = null"
+                        @focus="() => focusedEditButtonEvaluationId = evaluation.id"
+                      />
+                    </template>
+                    <v-list
+                      bg-color="primary"
+                      class="border-sm py-0"
+                      rounded="sm"
+                    >
+                      <v-list-item
+                        density="compact"
+                        @click="() => onEditEvaluation(evaluation)"
+                      >
+                        <v-list-item-title>Edit</v-list-item-title>
+                      </v-list-item>
+                      <v-list-item
+                        density="compact"
+                        @click="() => duplicatingEvaluationId = evaluation.id"
+                      >
+                        <v-list-item-title>Duplicate</v-list-item-title>
+                      </v-list-item>
+                    </v-list>
+                  </v-menu>
                 </div>
                 <div v-if="allowEdits && isEditing(evaluation)" class="pl-2 pt-2 select-evaluation-status">
                   <label for="select-evaluation-status">
@@ -583,10 +611,10 @@ import ProgressButton from '@/components/util/ProgressButton.vue'
 import SortableTableHeader from '@/components/util/SortableTableHeader'
 import {addInstructor} from '@/api/instructor'
 import {alertScreenReader, oxfordJoin, pluralize, putFocusNextTick, toFormatFromJsDate, toLocaleFromISO} from '@/lib/utils'
-import {clone, each, filter, find, get, includes, isEmpty, keys, map, pickBy, size, some} from 'lodash'
-import {computed, onMounted, ref, watch} from 'vue'
+import {clone, each, filter, find, get, includes, isEmpty, keys, map, noop, pickBy, size, some} from 'lodash'
+import {computed, onMounted, provide, ref, watch} from 'vue'
 import {EVALUATION_STATUSES, useDepartmentStore} from '@/stores/department/department-edit-session'
-import {mdiAlertCircle, mdiCheckCircle, mdiPlusCircle} from '@mdi/js'
+import {mdiAlertCircle, mdiCheckCircle, mdiChevronDown, mdiPlusCircle} from '@mdi/js'
 import {storeToRefs} from 'pinia'
 import {useContextStore} from '@/stores/context'
 import {validateMarkAsDone} from '@/stores/department/utils'
@@ -602,6 +630,7 @@ const contextStore = useContextStore()
 const departmentStore = useDepartmentStore()
 const {disableControls, errorDialog, errorDialogText, evaluations, selectedEvaluationIds} = storeToRefs(departmentStore)
 const departmentForms = ref([])
+const duplicatingEvaluationId = ref(undefined)
 const editRowId = ref(undefined)
 const evaluationHeaders = ref([])
 const evaluationTypes = ref([])
@@ -617,6 +646,7 @@ const isConfirmingCancelEdit = ref(false)
 const isConfirmingNonSisInstructor = ref(false)
 const isSaving = ref(false)
 const markAsDoneWarning = ref(undefined)
+const openMenuEvaluationId = ref(undefined)
 const pendingEditRowId = ref(undefined)
 const pendingInstructor = ref(undefined)
 const rules = {
@@ -649,6 +679,8 @@ const someEvaluationsSelected = computed(() => {
 const visibleEvaluations = computed(() => {
   return filter(evaluations.value, isStatusFilterEnabled)
 })
+
+provide('duplicatingEvaluationId', duplicatingEvaluationId)
 
 watch(errorDialog, isOpen => {
   if (isOpen) {
@@ -946,6 +978,9 @@ const validateAndSave = evaluation => {
 }
 .evaluation-input .v-messages__message {
   color: #fff !important;
+}
+.evaluation-row-btn .v-btn__append {
+  margin-left: 2px !important;
 }
 .focus-btn::before {
   opacity: 0.24;
