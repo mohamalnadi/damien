@@ -231,8 +231,8 @@ import PersonLookup from '@/components/admin/PersonLookup'
 import ProgressButton from '@/components/util/ProgressButton'
 import {EVALUATION_STATUSES, useDepartmentStore} from '@/stores/department/department-edit-session'
 import {addInstructor} from '@/api/instructor'
-import {computed, onMounted, ref, watch} from 'vue'
-import {endsWith, find, get, isEmpty, isObject, map, max, min, reduce, size, toInteger} from 'lodash'
+import {computed, inject, onMounted, ref, watch} from 'vue'
+import {endsWith, filter, find, get, isEmpty, isObject, map, max, min, size, toInteger} from 'lodash'
 import {putFocusNextTick, toFormatFromISO} from '@/lib/utils'
 import {storeToRefs} from 'pinia'
 import {useContextStore} from '@/stores/context'
@@ -295,7 +295,7 @@ const props = defineProps({
   }
 })
 
-const {disableControls} = storeToRefs(useDepartmentStore())
+const {disableControls, evaluations} = storeToRefs(useDepartmentStore())
 const evaluationTypes = ref([])
 const isConfirmingNonSisInstructor = ref(false)
 const isInstructorRequired = ref(false)
@@ -330,10 +330,10 @@ const selectedDepartmentFormName = computed(() => {
   return get(find(useContextStore().config.departmentForms, df => df.id === selectedDepartmentForm.value), 'name')
 })
 const selectedEvaluationsDescription = computed(() => {
-  if (isEmpty(useDepartmentStore().selectedEvaluationIds)) {
+  if (isEmpty(selectedEvaluations.value)) {
     return ''
   }
-  return `${useDepartmentStore().selectedEvaluationIds.length} ${useDepartmentStore().selectedEvaluationIds.length === 1 ? 'row' : 'rows'}`
+  return `${selectedEvaluations.value.length} ${selectedEvaluations.value.length === 1 ? 'row' : 'rows'}`
 })
 const selectedEvaluationTypeName = computed(() => {
   return get(find(useContextStore().config.evaluationTypes, et => et.id === selectedEvaluationType.value), 'name')
@@ -348,6 +348,8 @@ const validStartDates = computed(() => {
     'min': max(map(selectedEvaluations.value, e => e.meetingDates.start))
   }
 })
+
+const duplicatingEvaluationId = inject('duplicatingEvaluationId', undefined)
 
 onMounted(() => {
   evaluationTypes.value = [{id: null, name: 'Default'}].concat(useContextStore().config.evaluationTypes)
@@ -438,12 +440,8 @@ const showSelectedStatus = evaluation => {
 }
 
 const reset = () => {
-  selectedEvaluations.value = reduce(useDepartmentStore().evaluations, (evaluations, e) => {
-    if (e.isSelected) {
-      evaluations.push(e)
-    }
-    return evaluations
-  }, [])
+  const filterCriteria = duplicatingEvaluationId.value ? {'id': duplicatingEvaluationId.value} : 'isSelected'
+  selectedEvaluations.value = filter(evaluations.value, filterCriteria)
   midtermFormEnabled.value = false
   selectedDepartmentForm.value = props.departmentForm
   selectedEvaluationStatus.value = props.evaluationStatus
