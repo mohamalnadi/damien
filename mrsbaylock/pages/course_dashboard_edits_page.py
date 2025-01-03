@@ -396,6 +396,8 @@ class CourseDashboardEditsPage(CourseDashboards):
 
     # EVALUATION ROWS
 
+    EVAL_EDIT_MENU_EDIT_OPTION = By.XPATH, '//div[starts-with(@id, "option-edit-evaluation-")]'
+    EVAL_EDIT_MENU_DUPLICATE_OPTION = By.XPATH, '//div[starts-with(@id, "option-duplicate-evaluation-")]'
     EVAL_CHANGE_STATUS_SELECT = (By.ID, 'select-evaluation-status')
     EVAL_CHANGE_INSTR_BUTTON = (By.XPATH, '//button[contains(@id, "-change-instructor")]')
     EVAL_CHANGE_INSTR_INPUT = (By.ID, 'input-instructor-lookup-autocomplete')
@@ -415,6 +417,10 @@ class CourseDashboardEditsPage(CourseDashboards):
         self.wait_for_element((By.XPATH, xpath), utils.get_short_timeout())
         self.driver.execute_script('arguments[0].click();', self.element((By.XPATH, xpath)))
 
+    def open_edit_menu(self, evaluation, form):
+        app.logger.info('Clicking evaluation edit menu button')
+        self.wait_for_page_and_click_js((By.XPATH, f'{self.eval_row_xpath(evaluation, form=form)}//button'))
+
     def click_edit_evaluation(self, evaluation, form=None, eval_type=None):
         self.scroll_to_top()
         app.logger.info(f'Waiting for element locator {self.eval_row_xpath(evaluation, form=form, eval_type=eval_type)}//button')
@@ -426,7 +432,8 @@ class CourseDashboardEditsPage(CourseDashboards):
         self.scroll_to_element(self.eval_row_el(evaluation, form=form))
         self.mouseover(self.eval_row_el(evaluation, form=form))
         time.sleep(1)
-        self.wait_for_page_and_click_js((By.XPATH, f'{self.eval_row_xpath(evaluation, form=form)}//button'))
+        self.open_edit_menu(evaluation, form=form)
+        self.wait_for_element_and_click(CourseDashboardEditsPage.EVAL_EDIT_MENU_EDIT_OPTION)
 
     def select_eval_status(self, evaluation, status):
         app.logger.info(f"Setting CCN {evaluation.ccn} to {status.value['option']}")

@@ -52,15 +52,14 @@
       v-if="model"
       :id="`${idPrefix}-clear-btn`"
       :aria-label="`Clear ${ariaLabel}`"
-      class="clear-button clear-icon"
+      class="v-btn clear-button"
       :disabled="disabled"
       @click.stop.prevent="event => onClickClear(event, dateInputEvents)"
     >
       <v-icon
         color="secondary"
-        height="20"
         :icon="mdiCloseCircle"
-        width="20"
+        size="21"
       ></v-icon>
     </button>
   </div>
@@ -327,6 +326,28 @@ const onUpdateFocus = (hasFocus, inputEvents) => {
 </script>
 
 <style scoped>
+.clear-button {
+  background: transparent;
+  border: none;
+  border-radius: 100%;
+  cursor: pointer;
+  width: 28px;
+  height: 28px;
+  position: absolute;
+  right: 4px;
+  top: 0.29rem;
+  &:disabled {
+    cursor: not-allowed;
+    opacity: 0.26;
+  }
+  &:focus-visible {
+    background-color: rgba(0, 0, 0, var(--v-focus-opacity));
+    border: 2px solid rgba(0, 0, 0, var(--v-border-opacity));
+  }
+  &:hover:not(:focus-visible) {
+    background-color: rgba(0, 0, 0, var(--v-hover-opacity));
+  }
+}
 .custom-text-field {
   align-items: center;
   display: flex;
@@ -353,20 +374,6 @@ const onUpdateFocus = (hasFocus, inputEvents) => {
 }
 .custom-text-field input::placeholder {
   color: rgba(var(--v-theme-on-surface), var(--v-medium-emphasis-opacity));
-}
-.clear-button {
-  background: transparent;
-  border: none;
-  border-radius: 100%;
-  cursor: pointer;
-  padding: 4px;
-  position: absolute;
-  right: 4px;
-  top: 4px;
-  &:disabled {
-    cursor: not-allowed;
-    opacity: var(--v-disabled-opacity);
-  }
 }
 .custom-text-field.error--text {
   border-color: rgb(var(--v-theme-error));

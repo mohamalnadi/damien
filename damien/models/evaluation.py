@@ -478,6 +478,7 @@ class Evaluation(Base):
         for evaluation_id in evaluation_ids:
             evaluation = cls.from_id(evaluation_id)
             if not evaluation:
+                app.logger.info(f'Evaluation with ID {evaluation_id} not found.')
                 continue
             original_evaluation_feed = next((f for f in evaluations_feed if f['id'] == evaluation_id), None) if evaluations_feed else None
             evaluation.set_fields(fields, original_evaluation_feed)

@@ -202,10 +202,14 @@
                   v-if="allowEdits && !isEditing(evaluation) && (!readonly || !evaluation.status)"
                   class="pill-invisible mx-auto"
                 >
-                  <v-menu @update:model-value="isOpen => openMenuEvaluationId = (isOpen ? evaluation.id : null)">
+                  <v-menu
+                    scroll-strategy="none"
+                    z-index="10"
+                    @update:model-value="isOpen => openMenuEvaluationId = (isOpen ? evaluation.id : null)"
+                  >
                     <template #activator="{props: menuProps}">
                       <v-btn
-                        :id="`edit-evaluation-${evaluation.id}-btn`"
+                        :id="`evaluation-menu-btn-${evaluation.id}`"
                         :append-icon="mdiChevronDown"
                         class="mx-auto px-1 text-uppercase evaluation-row-btn"
                         :class="{
@@ -230,6 +234,7 @@
                       rounded="sm"
                     >
                       <v-list-item
+                        :id="`option-edit-evaluation-${evaluation.id}`"
                         base-color="primary"
                         density="compact"
                         @click="() => onEditEvaluation(evaluation)"
@@ -237,6 +242,7 @@
                         <v-list-item-title>Edit</v-list-item-title>
                       </v-list-item>
                       <v-list-item
+                        :id="`option-duplicate-evaluation-${evaluation.id}`"
                         base-color="primary"
                         density="compact"
                         @click="() => duplicatingEvaluationId = evaluation.id"
@@ -480,7 +486,7 @@
                     Start date
                   </label>
                   <AccessibleDateInput
-                    aria-label="Select Date"
+                    aria-label="Start Date"
                     :container-id="`evaluation-${rowIndex}-period`"
                     :disabled="isSaving"
                     :get-value="() => selectedStartDate"
@@ -736,7 +742,7 @@ const afterEditEvaluation = evaluation => {
   selectedEvaluationType.value = null
   selectedStartDate.value = null
   focusedEditButtonEvaluationId.value = evaluation.id
-  putFocusNextTick(`edit-evaluation-${focusedEditButtonEvaluationId.value}-btn`)
+  putFocusNextTick(`evaluation-menu-btn-${focusedEditButtonEvaluationId.value}`)
 }
 
 const customFilter = (value, search, item) => {
@@ -823,7 +829,7 @@ const onCancelConfirm = () => {
   isConfirmingCancelEdit.value = false
   focusedEditButtonEvaluationId.value = clone(pendingEditRowId.value)
   pendingEditRowId.value = null
-  putFocusNextTick(`edit-evaluation-${focusedEditButtonEvaluationId.value}-btn`)
+  putFocusNextTick(`evaluation-menu-btn-${focusedEditButtonEvaluationId.value}`)
 }
 
 const onCancelEdit = evaluation => {

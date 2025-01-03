@@ -22,7 +22,7 @@
         clearable
         color="primary"
         base-color="primary"
-        bg-color="surface"
+        bg-color="white"
         density="compact"
         :disabled="disabled"
         :error="required && !suppressValidation && !!size(errors)"
@@ -40,7 +40,6 @@
         :placeholder="placeholder"
         return-object
         :search="query"
-        theme="light"
         :variant="variant"
         @keydown.esc="onKeyDownEsc"
         @update:focused="onFocusInput"
@@ -50,7 +49,7 @@
         <template #loader="{isActive}">
           <v-progress-circular
             v-if="isActive"
-            class="mr-5"
+            class="mr-2"
             color="primary"
             indeterminate
             size="x-small"
@@ -62,17 +61,22 @@
             v-if="!isSearching"
             :id="`${idPrefix}-clear-btn`"
             :aria-label="`Clear ${label} input`"
-            class="d-flex align-self-center v-icon"
             :class="{'disabled-opacity': !selected}"
             density="compact"
             :disabled="!selected"
             exact
-            :icon="mdiCloseCircle"
+            icon
             :ripple="false"
             variant="text"
             @keydown.enter.stop.prevent="onClearInput"
             @click.stop.prevent="onClearInput"
-          />
+          >
+            <v-icon
+              color="secondary"
+              :icon="mdiCloseCircle"
+              size="21"
+            ></v-icon>
+          </v-btn>
         </template>
         <template #item="{index, item}">
           <v-list-item

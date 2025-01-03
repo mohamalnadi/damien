@@ -330,6 +330,8 @@ def get_dept(name, all_users=None):
         dept_terms_data.append(term_data)
     key = lambda x: x['dept_id']
     grouped = itertools.groupby(dept_terms_data, key)
+    dept_data = None
+    notes = []
     for k, g in grouped:
         grp = list(g)
         dept_data = {
@@ -337,12 +339,11 @@ def get_dept(name, all_users=None):
             'name': name,
             'participating': grp[0]['participating'],
         }
-        notes = []
         for i in grp:
             note = DepartmentNote(term_id=i['term_id'], note=i['note'])
             notes.append(note)
     dept = Department(dept_data, notes)
-    app.logger.info(f'Department: {vars(dept)}')
+    app.logger.info(f'Department: {name} {vars(dept)}')
     for n in dept.notes:
         app.logger.debug(f'Department note: {vars(n)}')
     dept.users = get_dept_users(dept, all_users)
