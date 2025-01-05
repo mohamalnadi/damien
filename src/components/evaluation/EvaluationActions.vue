@@ -9,7 +9,7 @@
             class="text-capitalize text-no-wrap mx-0 px-2"
             :disabled="disableControls || !allowEdits || !selectedEvaluationIds.length || isLoading || isInvalidAction(action)"
             variant="text"
-            @click.stop="action.apply()"
+            @click.stop="action.apply(key)"
           >
             <span v-if="!(isLoading && key !== 'duplicate' && applyingAction.key === key)">{{ action.text }}</span>
             <v-progress-circular
