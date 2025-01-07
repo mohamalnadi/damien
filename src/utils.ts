@@ -53,8 +53,13 @@ export function initializeAxios(axios: any) {
           axiosErrorHandler(error, axios)
           return Promise.reject(error)
         })
+      } else {
+        const errorUrl = get(error, 'response.config.url')
+        // 400 and 404 from the section or department evaluations API should be handled by the individual component.
+        if (!(errorUrl && (errorUrl.includes('/api/section') || (errorUrl.includes('/api/department') && errorUrl.includes('/evaluations'))))) {
+          axiosErrorHandler(error, axios)
+        }
+        return Promise.reject(error)
       }
-      axiosErrorHandler(error, axios)
-      return Promise.reject(error)
     })
 }
