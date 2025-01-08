@@ -14,9 +14,12 @@
       color="primary"
       dark
     >
-      <div class="text-h4 ml-3 text-no-wrap">
-        Course Evaluations
-      </div>
+      <router-link class="routerLink" :to="`/`">
+        <div class="text-h4 ml-3 text-no-wrap cursor-pointer">
+          Course Evaluations
+        </div>
+      </router-link>
+
       <div class="ml-auto pr-4">
         <v-menu offset-y rounded="lg">
           <template #activator="{props: menuProps}">
@@ -205,6 +208,7 @@ const toggleSidebarCollapsed = () => {
 }
 
 const toRoute = path => router.push({path})
+
 </script>
 
 <style scoped>
@@ -214,4 +218,8 @@ const toRoute = path => router.push({path})
 .nav-drawer-letter-spacing {
   letter-spacing: 0.1em;
 }
+.routerLink{
+  text-decoration: none;
+  color: white;
+ }
 </style>
