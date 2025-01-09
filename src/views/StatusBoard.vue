@@ -204,12 +204,12 @@ const someDepartmentsSelected = computed(() => {
 
 onMounted(() => {
   contextStore.loadingStart()
-  alertScreenReader(`Loading ${contextStore.selectedTermName}`)
+  alertScreenReader(`Loading ${contextStore.selectedTermName} Status Dashboard.`)
   departments.value = []
   getDepartmentsEnrolled(true, false, true, contextStore.selectedTermId).then(data => {
     departments.value = data
     loadBlockers().then(() => {
-      contextStore.loadingComplete(`Evaluation Status Dashboard for ${contextStore.selectedTermName}`)
+      contextStore.loadingComplete(`${contextStore.selectedTermName} Status Dashboard`)
       putFocusNextTick('page-title')
     })
   })
@@ -252,12 +252,10 @@ const toggleSelect = department => {
   } else {
     selectedDepartmentIds.value.splice(index, 1)
   }
-  alertScreenReader(`${department.name} ${isSelecting ? '' : 'un'}selected`)
 }
 
 const toggleSelectAll = () => {
   selectedDepartmentIds.value = allDepartmentsSelected.value ? [] : map(departments.value, 'id')
-  alertScreenReader(`All departments ${allDepartmentsSelected.value ? '' : 'un'}selected.`)
 }
 </script>
 

@@ -1,10 +1,10 @@
 <template>
-  <div aria-live="polite" class="service-announcement" role="alert">
+  <div aria-live="polite" class="service-announcement">
     <v-banner
       v-if="contextStore.serviceAnnouncement && contextStore.serviceAnnouncement.isLive"
       class="service-announcement-content"
     >
-      <h2 class="sr-only">Course Evaluations Service Annoucement</h2>
+      <h2 class="sr-only">Course Evaluations Annoucement.</h2>
       <pre>
         <span
           id="service-announcement"

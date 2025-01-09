@@ -1,6 +1,7 @@
 import {alertScreenReader, putFocusNextTick} from '@/lib/utils'
 import {defineStore} from 'pinia'
-import {find} from 'lodash'
+import {get, find} from 'lodash'
+import router from '@/router'
 
 export type CurrentUser = {
   departments: any[],
@@ -57,12 +58,14 @@ export const useContextStore = defineStore('context', {
       if (alert) {
         alertScreenReader(alert)
       } else if (pageTitle) {
-        alertScreenReader(`${pageTitle} page is ready`)
+        alertScreenReader(`${pageTitle} loaded`)
       }
       putFocusNextTick('page-title')
     },
-    loadingStart() {
+    loadingStart(srAlert?: string) {
       this.loading = true
+      const route = router.currentRoute.value
+      alertScreenReader(srAlert || `Loading ${String(get(route, 'name', ''))}.`)
     },
     selectTerm(termId: string|number) {
       return new Promise<void>((resolve, reject) => {

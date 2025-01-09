@@ -23,10 +23,9 @@
     <v-btn
       v-if="contextStore.currentUser.isAdmin"
       id="toggle-term-locked"
-      :aria-pressed="contextStore.isSelectedTermLocked"
       :disabled="isTogglingLock || contextStore.loading"
       icon
-      :title="`${contextStore.isSelectedTermLocked ? 'Unlock' : 'Lock'} ${contextStore.selectedTermName} for editing.`"
+      :title="`${contextStore.isSelectedTermLocked ? 'Unlock' : 'Lock'} ${contextStore.selectedTermName} for editing`"
       @click="toggleTermLocked"
     >
       <v-progress-circular

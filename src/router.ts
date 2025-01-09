@@ -111,7 +111,7 @@ const routes:RouteRecordRaw[] = [
         component: StatusBoard,
         beforeEnter: setTerm,
         meta: {
-          title: 'Status Board'
+          title: 'Status Dashboard'
         }
       }
     ]
