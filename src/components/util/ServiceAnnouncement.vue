@@ -1,7 +1,7 @@
 <template>
   <div aria-live="polite" class="service-announcement">
     <v-banner
-      v-if="contextStore.serviceAnnouncement && contextStore.serviceAnnouncement.isLive"
+      v-if="contextStore.serviceAnnouncement && contextStore.serviceAnnouncement.isLive && route.path !== '/404'"
       class="service-announcement-content"
     >
       <h2 class="sr-only">Course Evaluations Annoucement.</h2>
@@ -20,6 +20,9 @@
 import {getServiceAnnouncement} from '@/api/config'
 import {onMounted} from 'vue'
 import {useContextStore} from '@/stores/context'
+import {useRoute} from 'vue-router'
+
+const route = useRoute()
 
 const contextStore = useContextStore()
 
