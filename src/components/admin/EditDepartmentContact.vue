@@ -102,39 +102,49 @@
         </label>
         <v-combobox
           :id="`select-department-forms-${contactId}`"
-          v-model="contactDepartmentForms"
+          :aria-describedby="`selected-department-forms-desc-${contactId}`"
           aria-label="Department Forms"
           autocomplete="off"
-          chips
           class="mt-1"
-          closable-chips
           color="primary"
           density="compact"
           :disabled="isSaving"
+          eager
+          :filter-keys="['name']"
           hide-details
           hide-selected
           item-title="name"
           item-value="id"
-          :items="availableDepartmentForms"
+          :items="departmentStore.allDepartmentForms"
+          :list-props="{ariaLive: undefined}"
           :menu-props="{closeOnContentClick: true}"
+          :model-value="contactDepartmentForms"
           multiple
           return-object
           variant="outlined"
-          @change="onChangeContactDepartmentForms"
+          @update:model-value="onChangeContactDepartmentForms"
         >
-          <template #chip="{item}">
-            <v-chip
-              :id="`selected-deptForm-${item.value}-${contactId}`"
-              :key="item.value"
-              :close-label="`Remove ${item.title} from ${fullName}'s department forms`"
-              color="tertiary"
-              :disabled="isSaving"
-              :text="item.title"
-              variant="flat"
-              @click:close.stop="() => removeDepartmentForm(item.value)"
-            />
-          </template>
+          <template #selection></template>
         </v-combobox>
+        <span :id="`selected-department-forms-desc-${contactId}`" class="sr-only">
+          {{ isEmpty(contactDepartmentForms) ? 'No department forms selected' : `${oxfordJoin(map(contactDepartmentForms, 'name'))} selected` }}
+        </span>
+        <div :id="`selected-department-forms-desc-${contactId}`" class="py-1">
+          <v-chip
+            v-for="item in contactDepartmentForms"
+            :id="`selected-deptForm-${item.id}-${contactId}`"
+            :key="item.id"
+            class="ma-1"
+            closable
+            :close-label="`Remove ${item.name} from ${fullName}'s department forms`"
+            color="tertiary"
+            density="compact"
+            :disabled="isSaving"
+            :text="item.name"
+            variant="flat"
+            @click:close="() => removeDepartmentForm(item.id)"
+          />
+        </div>
       </div>
     </div>
     <div class="mt-4">
@@ -162,7 +172,7 @@
 import PersonLookup from '@/components/admin/PersonLookup'
 import ProgressButton from '@/components/util/ProgressButton'
 import {alertScreenReader, oxfordJoin, putFocusNextTick} from '@/lib/utils'
-import {cloneDeep, differenceBy, find, get, isNil, map, remove, sortBy} from 'lodash'
+import {cloneDeep, find, get, isEmpty, isNil, map, remove, sortBy} from 'lodash'
 import {computed, onMounted, ref, watch} from 'vue'
 import {getUserDepartmentForms} from '@/api/user'
 import {storeToRefs} from 'pinia'
@@ -203,9 +213,6 @@ const uid = ref(undefined)
 const userId = ref(undefined)
 const valid = ref(true)
 
-const availableDepartmentForms = computed(() => {
-  return differenceBy(departmentStore.allDepartmentForms, contactDepartmentForms.value, item => item.name)
-})
 const contactId = computed(() => {
   return get(props.contact, 'uid', 'add-contact')
 })
@@ -215,17 +222,6 @@ const fullName = computed(() => {
 
 watch(canReceiveCommunications, value => {
   srAlert('receive notifications', value)
-})
-
-watch(contactDepartmentForms, (val, prev) => {
-  if (!val || !prev || val.length === prev.length) return
-  contactDepartmentForms.value = val.map(item => {
-    if (typeof item === 'string') {
-      return find(availableDepartmentForms.value, {'name': item})
-    } else {
-      return item
-    }
-  }).filter(v => v)
 })
 
 watch(permissions, value => {
@@ -250,12 +246,7 @@ const fetchUserDepartmentForms = uid => {
 }
 
 const onChangeContactDepartmentForms = selectedValues => {
-  const names = map(selectedValues, 'name')
-  if (names.length) {
-    alertScreenReader(`Selected department form${names.length === 1 ? 's are' : 'is'} ${oxfordJoin(names)}.`)
-  } else {
-    alertScreenReader('No department forms selected.')
-  }
+  contactDepartmentForms.value = selectedValues
 }
 
 const onSave = () => {
@@ -302,7 +293,7 @@ const populateForm = contact => {
   } else {
     csid.value = null
     canReceiveCommunications.value = true
-    contactDepartmentForms.value = null
+    contactDepartmentForms.value = []
     email.value = null
     firstName.value = null
     lastName.value = null
@@ -316,7 +307,7 @@ const removeDepartmentForm = formId => {
   const form = find(contactDepartmentForms.value, {'id': formId})
   contactDepartmentForms.value = remove(contactDepartmentForms.value, f => f.id !== formId)
   alertScreenReader(`Removed ${form.name} from ${fullName.value} department forms.`)
-  putFocusNextTick(`input-deptForms-${contactId.value}`)
+  putFocusNextTick(`select-department-forms-${contactId.value}`)
 }
 
 const srAlert = (label, isSelected) => {
