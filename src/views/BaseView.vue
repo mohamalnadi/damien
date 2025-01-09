@@ -19,7 +19,9 @@
           Course Evaluations
         </div>
       </router-link>
-
+      <div v-if="contextStore.config.isVueAppDebugMode && get(contextStore.screenReaderAlert, 'message')" class="mx-auto">
+        <span v-if="contextStore.screenReaderAlert.politeness === 'assertive'">ALERT: </span> {{ contextStore.screenReaderAlert.message }}
+      </div>
       <div class="ml-auto pr-4">
         <v-menu offset-y rounded="lg">
           <template #activator="{props: menuProps}">
@@ -57,7 +59,7 @@
     <v-navigation-drawer
       v-if="currentUser.isAdmin"
       aria-labelledby="nav-header"
-      class="font-size-14 pt-2"
+      class="font-size-14"
       color="secondary"
       permanent
       :rail="isSidebarCollapsed"

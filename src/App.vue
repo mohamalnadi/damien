@@ -1,21 +1,18 @@
 <template>
-  <div>
-    <span
-      id="screen-reader-alert"
-      class="sr-only"
-      :aria-live="screenReaderAlert.politeness"
-      role="alert"
-    >
-      {{ screenReaderAlert.message }}
-    </span>
-    <router-view />
+  <div
+    id="screen-reader-alert"
+    class="sr-only"
+    :aria-live="contextStore.screenReaderAlert.politeness"
+  >
+    {{ contextStore.screenReaderAlert.message }}
   </div>
+  <router-view />
 </template>
 
 <script setup>
 import {useContextStore} from '@/stores/context'
 
-const screenReaderAlert = useContextStore().screenReaderAlert
+const contextStore = useContextStore()
 </script>
 
 <style>
