@@ -179,7 +179,6 @@ export const useDepartmentStore = defineStore('department', {
       this.errorDialogText = undefined
     },
     editEvaluation(evaluationId: number, sectionId: string, termId: string, fields: any[]) {
-      this.disableControls = true
       return new Promise((resolve: Function, reject) => {
         const departmentId = get(this.department, 'id', NaN)
         updateEvaluations(departmentId, 'edit', [evaluationId], termId, fields).then(
@@ -196,9 +195,7 @@ export const useDepartmentStore = defineStore('department', {
             })
           },
           error => reject(error)
-        ).finally(() => {
-          this.disableControls = false
-        })
+        )
       })
     },
     filterSelectedEvaluations(searchFilterResults: any[], enabledStatuses: any[]) {
