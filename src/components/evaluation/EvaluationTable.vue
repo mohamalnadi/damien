@@ -517,7 +517,7 @@
                     id="save-evaluation-edit-btn"
                     :action="() => validateAndSave(evaluation)"
                     class="ma-2 evaluation-form-btn"
-                    :disabled="disableControls || !rowValid || isSaving"
+                    :disabled="!rowValid || isSaving"
                     :in-progress="isSaving"
                     :text="isSaving ? 'Saving...' : 'Save'"
                   />
@@ -742,6 +742,7 @@ const afterEditEvaluation = evaluation => {
   selectedEvaluationType.value = null
   selectedStartDate.value = null
   focusedEditButtonEvaluationId.value = evaluation.id
+  departmentStore.setDisableControls(false)
   putFocusNextTick(`evaluation-menu-btn-${focusedEditButtonEvaluationId.value}`)
 }
 
@@ -866,6 +867,7 @@ const onConfirmNonSisInstructor = () => {
 }
 
 const onEditEvaluation = evaluation => {
+  departmentStore.setDisableControls(true)
   if (editRowId.value) {
     const editingEvaluation = find(evaluations.value, ['id', editRowId.value])
     isConfirmingCancelEdit.value = editingEvaluation && (
