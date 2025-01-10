@@ -6,7 +6,7 @@
         :for="`${idPrefix}-input`"
         :class="labelClass"
       >
-        <span v-if="label">{{ label }}</span>
+        <span v-if="label">{{ label }} {{ placeholder }}</span>
       </label>
     </div>
     <div :id="`${idPrefix}-container`" :class="{'v-col v-col-6': inline}">
@@ -82,7 +82,7 @@
           <v-list-item
             :id="`${idPrefix}-option-${index}`"
             :aria-selected="index === focusedListItemIndex"
-            class="font-size-18 text-tertiary"
+            class="font-size-18 text-tertiary person-lookup-result"
             :class="{
               'bg-light-blue-lighten-5': index === focusedListItemIndex
             }"
@@ -100,13 +100,12 @@
         </template>
       </v-autocomplete>
     </div>
-    <div :class="{'v-col v-col-2 pl-0': inline}">
+    <div aria-live="assertive" :class="{'v-col v-col-2 pl-0': inline}" role="alert">
       <div
         v-if="required && !suppressValidation && errors && errors[0]"
         :id="`${idPrefix}-error`"
         class="v-messages text-error px-3 mt-1"
         :class="theme.global.current.value.dark ? 'text--lighten-2' : ''"
-        role="alert"
       >
         {{ errors[0] }}
       </div>
@@ -116,7 +115,7 @@
 
 <script setup>
 import {alertScreenReader, putFocusNextTick} from '@/lib/utils'
-import {debounce, delay, each, filter, get, includes, replace, size, split, trim} from 'lodash'
+import {debounce, delay, each, get, replace, size, split, trim} from 'lodash'
 import {mdiCloseCircle} from '@mdi/js'
 import {nextTick, onMounted, ref} from 'vue'
 import {pluralize} from '@/lib/utils'
@@ -197,8 +196,6 @@ const debouncedSearch = ref(v => v)
 const errors = ref([])
 const focusedListItemIndex = ref(undefined)
 const isSearching = ref(false)
-const resultsSummary = ref(undefined)
-const resultsSummaryInterval = ref(undefined)
 const query = ref(undefined)
 // const selected = defineModel('selected', {default: {}, type: Object})
 const selected = ref(undefined)
@@ -223,28 +220,19 @@ onMounted(() => {
   debouncedSearch.value = debounce(executeSearch, 300)
 })
 
-const executeSearch = snippet => {
-  if (snippet) {
-    const apiSearch = props.instructorLookup ? searchInstructors : searchUsers
-    apiSearch(snippet, props.excludeUids).then(users => {
-      suggestions.value = []
-      each(users, user => {
-        let title = getUserLabel(user)
-        each(split(trim(snippet), /\W/g), token => {
-          title = replace(title, new RegExp(token, 'ig'), match => `<strong>${match}</strong>`)
-        })
-        suggestions.value.push({
-          title,
-          value: user
-        })
-      })
-      isSearching.value = false
-    })
-  } else {
-    isSearching.value = false
-    selected.value = null
+const executeSearch = () => {
+  const apiSearch = props.instructorLookup ? searchInstructors : searchUsers
+  apiSearch(query.value, props.excludeUids).then(users => {
     suggestions.value = []
-  }
+    each(users, user => {
+      suggestions.value.push({
+        title: getUserLabel(user),
+        value: user
+      })
+    })
+    isSearching.value = false
+    alertScreenReader(pluralize('result', suggestions.value.length))
+  })
 }
 
 const getComboboxElement = () => {
@@ -305,7 +293,6 @@ const onToggleMenu = isOpen => {
       } else {
         input.setAttribute('aria-expanded', false)
         input.removeAttribute('aria-activedescendant')
-        clearInterval(resultsSummaryInterval.value)
       }
     }
   })
@@ -317,30 +304,20 @@ const onUpdateSearch = q => {
   suppressValidation.value = false
   if (trimmed) {
     isSearching.value = true
-    debouncedSearch.value(trimmed)
-  }
-  clearInterval(resultsSummaryInterval.value)
-  resultsSummaryInterval.value = setInterval(setResultsSummary, 1000)
-}
-
-const setResultsSummary = () => {
-  const menuOverlay = document.getElementById(`${props.idPrefix}-menu`)
-  const listbox = menuOverlay && menuOverlay.querySelector('[role="listbox"]')
-  clearInterval(resultsSummaryInterval.value)
-  if (listbox) {
-    const suggestions = filter(listbox.children, child => includes(child.classList, 'v-list-item'))
-    resultsSummary.value = pluralize('result', suggestions.length)
+    debouncedSearch.value()
   } else {
-    resultsSummary.value = ''
+    isSearching.value = false
+    selected.value = null
+    suggestions.value = []
   }
 }
 
 const suggest = item => {
   let label = item.title
   each(split(trim(query.value)), token => {
-    label = replace(label, new RegExp(token, 'ig'), match => `<strong>${match}</strong>`)
+    label = replace(label, new RegExp(token, 'ig'), match => `<strong class="highlight-match">${match}</strong>`)
   })
-  return item.title
+  return label
 }
 
 const validate = suggestion => {
@@ -350,6 +327,11 @@ const validate = suggestion => {
 }
 </script>
 
+<style>
+.person-lookup-result .highlight-match {
+  background-color: rgba(var(--v-theme-tertiary), var(--v-pressed-opacity));
+}
+</style>
 <style scoped>
 .autocomplete-menu {
   z-index: 210 !important;
