@@ -107,7 +107,7 @@ class CourseDashboards(DamienPages):
         for e in evals:
             dates = ''
             if e.eval_start_date:
-                dates = f"{e.eval_start_date.strftime('%m/%d/%y')} - {e.eval_end_date.strftime('%m/%d/%y')}"
+                dates = f"{e.eval_start_date.strftime('%m/%d/%Y')} - {e.eval_end_date.strftime('%m/%d/%Y')}"
             if e.instructor is None or e.instructor.uid is None:
                 uid = ''
                 name = ''
