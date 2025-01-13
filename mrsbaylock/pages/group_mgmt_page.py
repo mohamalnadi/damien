@@ -49,7 +49,7 @@ class GroupMgmtPage(DamienPages):
 
     @staticmethod
     def dept_user_row_xpath(idx, user):
-        return f'//td[contains(@id, "department-{idx}")][text()="{user.uid}"]/..'
+        return f'//td[contains(@id, "department-{idx}") and contains(., "{user.uid}")]/..'
 
     def dept_user_name(self, idx, user):
         xpath = f'{GroupMgmtPage.dept_user_row_xpath(idx, user)}/td[contains(@id, "name") and contains(@id, "contact")]'
@@ -60,7 +60,7 @@ class GroupMgmtPage(DamienPages):
         return self.element((By.XPATH, xpath)).text
 
     def dept_user_comms(self, idx, user):
-        xpath = f'{GroupMgmtPage.dept_user_row_xpath(idx, user)}/td[contains(@id, "comms")]/span'
+        xpath = f'{GroupMgmtPage.dept_user_row_xpath(idx, user)}/td[contains(@id, "comms")]//span'
         return self.element((By.XPATH, xpath)).get_attribute('innerText')
 
     def dept_user_blue_perm(self, idx, user):
