@@ -48,20 +48,15 @@ class StatusBoardAdminPage(DamienPages):
             ec.visibility_of_any_elements_located((By.XPATH, '//a[starts-with(@id, "link-to-dept-")]')),
         )
 
-    LOCK_BOX = (By.XPATH, '//label[text()=" Evaluation term is unlocked. "]/following-sibling::button')
-    UNLOCK_BOX = (By.XPATH, '//label[text()=" Evaluation term is locked. "]/following-sibling::button')
+    LOCK_BOX = (By.ID, 'toggle-term-locked')
 
-    def lock_current_term(self):
+    def toggle_term_lock(self):
         app.logger.info('Locking current term edits')
         self.wait_for_page_and_click(StatusBoardAdminPage.LOCK_BOX)
 
-    def unlock_current_term(self):
-        app.logger.info('Unlocking current term edits')
-        self.wait_for_page_and_click(StatusBoardAdminPage.UNLOCK_BOX)
-
     def is_current_term_locked(self):
         time.sleep(1)
-        return True if (self.is_present(StatusBoardAdminPage.UNLOCK_BOX)) else False
+        return 'Unlock' in self.element(StatusBoardAdminPage.LOCK_BOX).get_attribute('title')
 
     NOTIF_SELECT_ALL_CBX = (By.ID, 'checkbox-select-dept-all')
     NOTIF_APPLY_BUTTON = (By.ID, 'open-notification-form-btn')

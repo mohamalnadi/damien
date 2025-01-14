@@ -58,7 +58,7 @@ class CourseDashboardEditsPage(CourseDashboards):
     def wait_for_contact(self, user):
         app.logger.info(f'Waiting for UID {user.uid} to appear')
         Wait(self.driver, utils.get_medium_timeout()).until(
-            ec.presence_of_element_located((By.XPATH, f'{self.dept_contact_xpath(user)}//div[@id="dept-contact-{user.user_id}-details"]')),
+            ec.presence_of_element_located((By.XPATH, self.dept_contact_xpath(user))),
         )
         time.sleep(1)
 
@@ -68,8 +68,7 @@ class CourseDashboardEditsPage(CourseDashboards):
     def expand_dept_contact(self, user):
         el = self.dept_contact_email_loc(user)
         if not self.is_present(el) or not self.element(el).is_displayed():
-            xpath = f'{self.dept_contact_xpath(user)}//button[@id="department-contact-{user.user_id}-btn"]'
-            self.wait_for_page_and_click_js((By.XPATH, xpath))
+            self.wait_for_page_and_click((By.XPATH, f'{self.dept_contact_xpath(user)}/button'))
             time.sleep(1)
 
     def dept_contact_email_loc(self, user):
@@ -104,10 +103,11 @@ class CourseDashboardEditsPage(CourseDashboards):
     EDIT_BUTTON = (By.ID, 'apply-course-action-btn-edit')
     DUPE_SECTION_INSTR_INPUT = (By.ID, 'duplicate-evaluations-instructor-lookup-input')
     DUPE_EVAL_TYPE_SELECT = (By.ID, 'duplicate-evaluations-select-type')
-    DUPE_CXL_BUTTON = (By.ID, 'cancel-duplicate-btn')
+    DUPE_CXL_BUTTON = (By.ID, 'duplicate-evaluations-cancel-duplicate-btn')
     USE_MIDTERM_FORM_CBX = (By.ID, 'duplicate-evaluations-midterm-checkbox')
-    USE_START_DATE_INPUT = (By.ID, 'duplicate-evaluations-start-date')
+    USE_START_DATE_INPUT = (By.ID, 'duplicate-evaluations-start-date-input')
     ACTION_APPLY_BUTTON = (By.ID, 'apply-course-action-btn')
+    DUPE_EVAL_ACTION_APPLY_BUTTON = (By.ID, 'duplicate-evaluations-apply-course-action-btn')
 
     def edit_button_is_enabled(self):
         time.sleep(1)
@@ -194,7 +194,7 @@ class CourseDashboardEditsPage(CourseDashboards):
             app.logger.info('Setting default evaluation type')
             self.wait_for_select_and_click_option(CourseDashboardEditsPage.DUPE_EVAL_TYPE_SELECT, 'Default')
         time.sleep(1)
-        self.wait_for_element_and_click(CourseDashboardEditsPage.ACTION_APPLY_BUTTON)
+        self.wait_for_element_and_click(CourseDashboardEditsPage.DUPE_EVAL_ACTION_APPLY_BUTTON)
         time.sleep(utils.get_short_timeout())
         dupe = copy.deepcopy(evaluation)
         if instructor:
@@ -405,7 +405,7 @@ class CourseDashboardEditsPage(CourseDashboards):
     EVAL_CHANGE_DEPT_FORM_OPTION = (By.XPATH, '//div[@id="select-department-form"]//li')
     EVAL_CHANGE_DEPT_FORM_NO_OPTION = (By.XPATH, '//li[contains(text(), "Sorry, no matching options.")]')
     EVAL_CHANGE_EVAL_TYPE_SELECT = (By.ID, 'select-evaluation-type')
-    EVAL_CHANGE_START_DATE_INPUT = (By.XPATH, '//input[contains(@class, "datepicker-input")]')
+    EVAL_CHANGE_START_DATE_INPUT = (By.ID, 'evaluation-start-date-input')
     EVAL_CHANGE_START_REQ_MSG = (By.XPATH, '//span[contains(text(), "Required")]')
     EVAL_CHANGE_SAVE_BUTTON = (By.ID, 'save-evaluation-edit-btn')
     EVAL_CHANGE_CANCEL_BUTTON = (By.ID, 'cancel-evaluation-edit-btn')
@@ -419,7 +419,7 @@ class CourseDashboardEditsPage(CourseDashboards):
 
     def open_edit_menu(self, evaluation, form):
         app.logger.info('Clicking evaluation edit menu button')
-        self.wait_for_page_and_click_js((By.XPATH, f'{self.eval_row_xpath(evaluation, form=form)}//button'))
+        self.wait_for_page_and_click((By.XPATH, f'{self.eval_row_xpath(evaluation, form=form)}//button'))
 
     def click_edit_evaluation(self, evaluation, form=None, eval_type=None):
         self.scroll_to_top()
@@ -500,7 +500,7 @@ class CourseDashboardEditsPage(CourseDashboards):
         if date:
             date_str = date.strftime('%m/%d/%Y')
             app.logger.info(f'Setting start date {date_str} on CCN {evaluation.ccn}')
-            self.element(CourseDashboardEditsPage.EVAL_CHANGE_START_DATE_INPUT).send_keys(date_str)
+            self.enter_chars(self.EVAL_CHANGE_START_DATE_INPUT, date_str)
         self.hit_tab()
         self.hit_tab()
 

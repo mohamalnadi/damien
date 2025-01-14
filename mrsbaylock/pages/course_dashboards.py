@@ -214,8 +214,8 @@ class CourseDashboards(DamienPages):
 
     def filter_rows(self, search_string):
         app.logger.info(f'Filtering table by {search_string}')
-        self.remove_and_enter_chars(CourseDashboards.SEARCH_INPUT, search_string)
-        time.sleep(utils.get_short_timeout())
+        self.remove_and_send_chars(CourseDashboards.SEARCH_INPUT, search_string)
+        time.sleep(2)
 
     # SORTING
 

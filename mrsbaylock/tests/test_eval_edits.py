@@ -130,6 +130,7 @@ class TestEvaluationManagement:
 
     def test_add_eval_type(self):
         eval_type = next(filter(lambda t: t != self.dept_1.evaluations[2].eval_type and t != 'Revert', self.eval_types))
+        self.dept_details_admin_page.click_cancel_eval_changes()
         self.dept_details_admin_page.click_edit_evaluation(self.dept_1.evaluations[2])
         self.dept_details_admin_page.change_eval_type(self.dept_1.evaluations[2], eval_type)
         self.dept_details_admin_page.click_save_eval_changes(self.dept_1.evaluations[2])
@@ -157,7 +158,7 @@ class TestEvaluationManagement:
         self.dept_details_admin_page.click_save_eval_changes(e)
         self.dept_details_admin_page.wait_for_eval_rows()
         self.dept_details_admin_page.wait_for_eval_row(e)
-        expected = f"{e.eval_start_date.strftime('%m/%d/%y')} - {e.eval_end_date.strftime('%m/%d/%y')}"
+        expected = f"{e.eval_start_date.strftime('%m/%d/%Y')} - {e.eval_end_date.strftime('%m/%d/%Y')}"
         assert expected in self.dept_details_admin_page.eval_period_dates(e)
 
     def test_remove_start_date(self):
@@ -165,7 +166,8 @@ class TestEvaluationManagement:
         self.dept_details_admin_page.click_edit_evaluation(e)
         self.dept_details_admin_page.change_eval_start_date(e)
         self.dept_details_admin_page.hit_escape()
-        self.dept_details_admin_page.wait_for_element(CourseDashboardEditsPage.EVAL_CHANGE_START_REQ_MSG, utils.get_short_timeout())
+        self.dept_details_admin_page.wait_for_element(CourseDashboardEditsPage.EVAL_CHANGE_START_REQ_MSG,
+                                                      utils.get_short_timeout())
 
     # DUPLICATION
 
@@ -177,7 +179,7 @@ class TestEvaluationManagement:
         self.dept_details_admin_page.look_up_uid(e.instructor.uid, CourseDashboardEditsPage.DUPE_SECTION_INSTR_INPUT)
         self.dept_details_admin_page.click_look_up_result(e.instructor)
         time.sleep(1)
-        self.dept_details_admin_page.wait_for_page_and_click_js(CourseDashboardEditsPage.ACTION_APPLY_BUTTON)
+        self.dept_details_admin_page.wait_for_page_and_click(CourseDashboardEditsPage.DUPE_EVAL_ACTION_APPLY_BUTTON)
         self.dept_details_admin_page.await_error_and_accept()
 
     def test_duplicate_section_new_instructor_and_eval_type(self):
@@ -248,7 +250,7 @@ class TestEvaluationManagement:
         self.dept_details_admin_page.look_up_section(e.ccn)
         self.dept_details_admin_page.click_confirm_add_section()
         self.dept_details_admin_page.wait_for_eval_rows()
-        self.dept_details_admin_page.wait_for_eval_row(e)
+        self.dept_details_admin_page.wait_for_eval_row(e, dept=self.dept_1)
         self.dept_1.evaluations.append(e)
 
     # CONFIRM, PUBLISH, AND VERIFY CSV EXPORTS
@@ -372,7 +374,7 @@ class TestEvaluationManagement:
         self.dept_details_dept_page.enter_bulk_start_date(new_date)
         self.dept_details_dept_page.click_bulk_edit_save()
         self.dept_details_dept_page.wait_for_bulk_update()
-        new_date_str = datetime.datetime.strftime(new_date, '%m/%d/%y')
+        new_date_str = datetime.datetime.strftime(new_date, '%m/%d/%Y')
         self.dept_details_dept_page.filter_rows(new_date_str)
         assert len(self.dept_details_dept_page.visible_evaluation_rows()) == len(evaluations)
         assert list(set(self.dept_details_dept_page.visible_evaluation_starts())) == [new_date_str]
@@ -404,7 +406,7 @@ class TestEvaluationManagement:
             ev['status'] += f" {new_status.value['option']}"
             ev['form'] += f' {new_form}'
             ev['type'] += f' {new_type}'
-            ev['date'] += f" {new_date.strftime('%m/%d/%y')}"
+            ev['date'] += f" {new_date.strftime('%m/%d/%Y')}"
         visible = self.dept_details_dept_page.visible_preview_data()
         visible.sort(key=lambda d: (d['ccn'], d['uid']))
         assert visible == expected
@@ -412,7 +414,7 @@ class TestEvaluationManagement:
         self.dept_details_dept_page.click_bulk_edit_save()
         self.dept_details_dept_page.wait_for_bulk_update()
 
-        new_date_str = datetime.datetime.strftime(new_date, '%m/%d/%y')
+        new_date_str = datetime.datetime.strftime(new_date, '%m/%d/%Y')
         self.dept_details_dept_page.filter_rows(new_date_str)
         assert len(self.dept_details_dept_page.visible_evaluation_rows()) == len(evaluations)
         assert list(set(self.dept_details_dept_page.visible_evaluation_statuses())) == [new_status.value['ui']]
