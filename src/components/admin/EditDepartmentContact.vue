@@ -124,6 +124,16 @@
           variant="outlined"
           @update:model-value="onChangeContactDepartmentForms"
         >
+          <template #item="{item, index, props: itemProps}">
+            <v-list-item
+              :aria-posinset="index"
+              :aria-selected="itemProps.active === true"
+              :aria-setsize="departmentFormsCount - size(contactDepartmentForms)"
+              role="option"
+              :title="item.title"
+              v-bind="itemProps"
+            />
+          </template>
           <template #selection></template>
         </v-combobox>
         <span :id="`selected-department-forms-desc-${contactId}`" class="sr-only">
@@ -172,7 +182,7 @@
 import PersonLookup from '@/components/admin/PersonLookup'
 import ProgressButton from '@/components/util/ProgressButton'
 import {alertScreenReader, oxfordJoin, putFocusNextTick} from '@/lib/utils'
-import {cloneDeep, find, get, isEmpty, isNil, map, remove, sortBy} from 'lodash'
+import {cloneDeep, find, get, isEmpty, isNil, map, remove, size, sortBy} from 'lodash'
 import {computed, onMounted, ref, watch} from 'vue'
 import {getUserDepartmentForms} from '@/api/user'
 import {storeToRefs} from 'pinia'
@@ -200,6 +210,7 @@ const {contacts} = storeToRefs(departmentStore)
 const canReceiveCommunications = ref(true)
 const csid = ref(undefined)
 const contactDepartmentForms = ref([])
+const departmentFormsCount = ref(0)
 const email = ref(undefined)
 const emailRules = [
   v => !!v || 'E-mail is required',
@@ -235,6 +246,7 @@ watch(permissions, value => {
 })
 
 onMounted(() => {
+  departmentFormsCount.value = size(departmentStore.allDepartmentForms)
   populateForm(props.contact)
   putFocusNextTick('add-contact-sub-header')
 })
