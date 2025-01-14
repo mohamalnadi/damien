@@ -195,9 +195,13 @@ class Page(object):
             time.sleep(0.5)
             self.element(locator).send_keys(i)
 
-    def remove_and_enter_chars(self, locator, string):
+    def remove_and_send_chars(self, locator, string):
         self.remove_chars(locator)
         self.element(locator).send_keys(string)
+
+    def remove_and_type_chars(self, locator, string):
+        self.remove_chars(locator)
+        self.enter_chars(locator, string)
 
     def wait_for_select_and_click_option(self, select_el_loc, option_str):
         self.wait_for_page_and_click_js(select_el_loc)

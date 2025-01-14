@@ -136,7 +136,7 @@ class ListMgmtPage(DamienPages):
 
     def enter_service_alert(self, alert_text):
         app.logger.info(f'Entering service alert {alert_text}')
-        self.remove_and_enter_chars(ListMgmtPage.SERVICE_ALERT_INPUT, alert_text)
+        self.remove_and_send_chars(ListMgmtPage.SERVICE_ALERT_INPUT, alert_text)
 
     def click_publish_alert_cbx(self):
         self.wait_for_element_and_click(ListMgmtPage.SERVICE_ALERT_POST_CBX)

@@ -24,7 +24,6 @@ ENHANCEMENTS, OR MODIFICATIONS.
 """
 
 from datetime import date
-from itertools import tee
 
 from flask import current_app as app
 from mrsbaylock.models.evaluation_status import EvaluationStatus
@@ -46,8 +45,7 @@ class TestDeptUser:
     dept_forms = evaluation_utils.get_all_dept_forms()
     dept = evaluation_utils.get_dept_with_listings_or_shares(term, depts)
     evaluations = evaluation_utils.get_evaluations(term, dept, log=True)
-    single_dept_contacts, multi_dept_contacts = tee((len(user.dept_roles) > 1, user) for user in dept.users)
-    contact = next(multi_dept_contacts)[1]
+    contact = dept.users[0]
 
     def test_log_in(self):
         self.login_page.load_page()
@@ -59,7 +57,7 @@ class TestDeptUser:
     def test_status_board_lock(self):
         self.status_board_admin_page.load_page()
         if not self.status_board_admin_page.is_current_term_locked():
-            self.status_board_admin_page.lock_current_term()
+            self.status_board_admin_page.toggle_term_lock()
 
     def test_verify_locked_admin_edits(self):
         self.status_board_admin_page.click_dept_link(self.dept)
@@ -77,7 +75,7 @@ class TestDeptUser:
         self.dept_details_dept_page.log_out()
         self.login_page.dev_auth()
         self.status_board_admin_page.load_page()
-        self.status_board_admin_page.unlock_current_term()
+        self.status_board_admin_page.toggle_term_lock()
 
     def test_verify_unlocked_admin_edits(self):
         self.status_board_admin_page.click_dept_link(self.dept)
@@ -130,7 +128,8 @@ class TestDeptUser:
 
     def test_no_notifications(self):
         self.homepage.load_page()
-        self.dept_details_dept_page.click_contact_dept_link(self.dept)
+        if len(self.contact.dept_roles) > 1:
+            self.dept_details_dept_page.click_contact_dept_link(self.dept)
         self.dept_details_dept_page.wait_for_eval_rows()
         assert not self.dept_details_dept_page.is_present(DeptDetailsAdminPage.NOTIF_FORM_BUTTON)
 

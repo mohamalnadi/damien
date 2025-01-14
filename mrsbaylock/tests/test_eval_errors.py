@@ -134,7 +134,7 @@ class TestEvalErrors:
         self.dept_details_dept_page.wait_for_eval_rows()
         assert self.dept_form_1 in self.dept_details_dept_page.eval_dept_form(self.x_list_eval, form=self.dept_form_1)
         assert self.eval_type_1 in self.dept_details_dept_page.eval_type(self.x_list_eval, form=self.dept_form_1)
-        expected = f"{self.x_list_start_1.strftime('%m/%d/%y')} - {self.x_list_end_1.strftime('%m/%d/%y')}"
+        expected = f"{self.x_list_start_1.strftime('%m/%d/%Y')} - {self.x_list_end_1.strftime('%m/%d/%Y')}"
         assert expected in self.dept_details_dept_page.eval_period_dates(self.x_list_eval, form=self.dept_form_1)
 
     def test_x_list_unmarked_dept_2_verify_edits(self):
@@ -143,7 +143,7 @@ class TestEvalErrors:
         self.dept_details_dept_page.wait_for_eval_rows()
         assert self.dept_form_1 in self.dept_details_dept_page.eval_dept_form(self.x_list_eval, form=self.dept_form_1)
         assert self.eval_type_1 in self.dept_details_dept_page.eval_type(self.x_list_eval, form=self.dept_form_1)
-        expected = f"{self.x_list_start_1.strftime('%m/%d/%y')} - {self.x_list_end_1.strftime('%m/%d/%y')}"
+        expected = f"{self.x_list_start_1.strftime('%m/%d/%Y')} - {self.x_list_end_1.strftime('%m/%d/%Y')}"
         assert expected in self.dept_details_dept_page.eval_period_dates(self.x_list_eval, form=self.dept_form_1)
         assert 'Conflicts with' not in self.dept_details_dept_page.eval_dept_form(self.x_list_eval, form=self.dept_form_1)
         assert 'Conflicts with' not in self.dept_details_dept_page.eval_type(self.x_list_eval, form=self.dept_form_1)
@@ -171,7 +171,7 @@ class TestEvalErrors:
         self.dept_details_dept_page.wait_for_eval_rows()
         assert self.dept_form_2 in self.dept_details_dept_page.eval_dept_form(self.x_list_eval, form=self.dept_form_2)
         assert self.eval_type_2 in self.dept_details_dept_page.eval_type(self.x_list_eval, form=self.dept_form_2)
-        expected = f"{self.x_list_start_2.strftime('%m/%d/%y')} - {self.x_list_end_2.strftime('%m/%d/%y')}"
+        expected = f"{self.x_list_start_2.strftime('%m/%d/%Y')} - {self.x_list_end_2.strftime('%m/%d/%Y')}"
         assert expected in self.dept_details_dept_page.eval_period_dates(self.x_list_eval, form=self.dept_form_2)
 
     def test_x_list_unmarked_dept_2_verify_form_conflict(self):
@@ -185,10 +185,10 @@ class TestEvalErrors:
         assert conflict_type in self.dept_details_dept_page.eval_type(self.x_list_eval, form=self.dept_form_2)
 
     def test_x_list_unmarked_dept_2_verify_date_conflict(self):
-        pd_1 = self.x_list_start_1.strftime('%m/%d/%y')
-        pd_2 = self.x_list_start_2.strftime('%m/%d/%y')
+        pd_1 = self.x_list_start_1.strftime('%m/%d/%Y')
+        pd_2 = self.x_list_start_2.strftime('%m/%d/%Y')
         conflict_date = f'Conflicts with period starting {pd_1} from {self.x_list_dept_1.name} department'
-        expected = f"{pd_2} - {self.x_list_end_2.strftime('%m/%d/%y')}"
+        expected = f"{pd_2} - {self.x_list_end_2.strftime('%m/%d/%Y')}"
         assert expected in self.dept_details_dept_page.eval_period_dates(self.x_list_eval, form=self.dept_form_2)
         assert conflict_date in self.dept_details_dept_page.eval_period_dates(self.x_list_eval, form=self.dept_form_2)
 
@@ -198,7 +198,7 @@ class TestEvalErrors:
         self.dept_details_dept_page.wait_for_eval_rows()
         assert self.dept_form_1 in self.dept_details_dept_page.eval_dept_form(self.x_list_eval, form=self.dept_form_1)
         assert self.eval_type_1 in self.dept_details_dept_page.eval_type(self.x_list_eval, form=self.dept_form_1)
-        expected = f"{self.x_list_start_1.strftime('%m/%d/%y')} - {self.x_list_end_1.strftime('%m/%d/%y')}"
+        expected = f"{self.x_list_start_1.strftime('%m/%d/%Y')} - {self.x_list_end_1.strftime('%m/%d/%Y')}"
         assert expected in self.dept_details_dept_page.eval_period_dates(self.x_list_eval, form=self.dept_form_1)
 
     def test_x_list_unmarked_dept_1_verify_form_conflict(self):
@@ -212,10 +212,10 @@ class TestEvalErrors:
         assert conflict_type in self.dept_details_dept_page.eval_type(self.x_list_eval, form=self.dept_form_1)
 
     def test_x_list_unmarked_dept_1_verify_date_conflict(self):
-        pd_1 = self.x_list_start_1.strftime('%m/%d/%y')
-        pd_2 = self.x_list_start_2.strftime('%m/%d/%y')
+        pd_1 = self.x_list_start_1.strftime('%m/%d/%Y')
+        pd_2 = self.x_list_start_2.strftime('%m/%d/%Y')
         conflict_date = f'Conflicts with period starting {pd_2} from {self.x_list_dept_2.name} department'
-        expected = f"{pd_1} - {self.x_list_end_1.strftime('%m/%d/%y')}"
+        expected = f"{pd_1} - {self.x_list_end_1.strftime('%m/%d/%Y')}"
         assert expected in self.dept_details_dept_page.eval_period_dates(self.x_list_eval, form=self.dept_form_1)
         assert conflict_date in self.dept_details_dept_page.eval_period_dates(self.x_list_eval, form=self.dept_form_1)
 
@@ -246,10 +246,10 @@ class TestEvalErrors:
         assert conflict_type in self.dept_details_dept_page.eval_type(self.x_list_eval, form=self.dept_form_1)
 
     def test_x_list_review_dept_1_verify_date_conflict(self):
-        pd_1 = self.x_list_start_1.strftime('%m/%d/%y')
-        pd_2 = self.x_list_start_2.strftime('%m/%d/%y')
+        pd_1 = self.x_list_start_1.strftime('%m/%d/%Y')
+        pd_2 = self.x_list_start_2.strftime('%m/%d/%Y')
         conflict_date = f'Conflicts with period starting {pd_2} from {self.x_list_dept_2.name} department'
-        expected = f"{pd_1} - {self.x_list_end_1.strftime('%m/%d/%y')}"
+        expected = f"{pd_1} - {self.x_list_end_1.strftime('%m/%d/%Y')}"
         assert expected in self.dept_details_dept_page.eval_period_dates(self.x_list_eval, form=self.dept_form_1)
         assert conflict_date in self.dept_details_dept_page.eval_period_dates(self.x_list_eval, form=self.dept_form_1)
 
@@ -267,10 +267,10 @@ class TestEvalErrors:
         assert conflict_type in self.dept_details_dept_page.eval_type(self.x_list_eval, form=self.dept_form_2)
 
     def test_x_list_review_dept_2_verify_date_conflict(self):
-        pd_1 = self.x_list_start_1.strftime('%m/%d/%y')
-        pd_2 = self.x_list_start_2.strftime('%m/%d/%y')
+        pd_1 = self.x_list_start_1.strftime('%m/%d/%Y')
+        pd_2 = self.x_list_start_2.strftime('%m/%d/%Y')
         conflict_date = f'Conflicts with period starting {pd_1} from {self.x_list_dept_1.name} department'
-        expected = f"{pd_2} - {self.x_list_end_2.strftime('%m/%d/%y')}"
+        expected = f"{pd_2} - {self.x_list_end_2.strftime('%m/%d/%Y')}"
         assert expected in self.dept_details_dept_page.eval_period_dates(self.x_list_eval, form=self.dept_form_2)
         assert conflict_date in self.dept_details_dept_page.eval_period_dates(self.x_list_eval, form=self.dept_form_2)
 
@@ -323,7 +323,7 @@ class TestEvalErrors:
         self.dept_details_admin_page.wait_for_eval_rows()
         assert self.dept_form_2 in self.dept_details_admin_page.eval_dept_form(self.x_list_eval, form=self.dept_form_2)
         assert self.eval_type_2 in self.dept_details_admin_page.eval_type(self.x_list_eval, form=self.dept_form_2)
-        expected = f"{self.x_list_start_2.strftime('%m/%d/%y')} - {self.x_list_end_2.strftime('%m/%d/%y')}"
+        expected = f"{self.x_list_start_2.strftime('%m/%d/%Y')} - {self.x_list_end_2.strftime('%m/%d/%Y')}"
         assert expected in self.dept_details_admin_page.eval_period_dates(self.x_list_eval, form=self.dept_form_2)
         assert 'Conflicts with' not in self.dept_details_admin_page.eval_dept_form(self.x_list_eval, form=self.dept_form_2)
         assert 'Conflicts with' not in self.dept_details_admin_page.eval_type(self.x_list_eval, form=self.dept_form_2)
@@ -357,7 +357,7 @@ class TestEvalErrors:
         self.dept_details_dept_page.wait_for_eval_rows()
         assert self.dept_form_1 in self.dept_details_dept_page.eval_dept_form(self.share_eval)
         assert self.eval_type_1 in self.dept_details_dept_page.eval_type(self.share_eval)
-        expected = f"{self.share_start_1.strftime('%m/%d/%y')} - {self.share_end_1.strftime('%m/%d/%y')}"
+        expected = f"{self.share_start_1.strftime('%m/%d/%Y')} - {self.share_end_1.strftime('%m/%d/%Y')}"
         assert expected in self.dept_details_dept_page.eval_period_dates(self.share_eval)
 
     @pytest.mark.skipif(not share, reason='No foreign room shares in course data')
@@ -367,7 +367,7 @@ class TestEvalErrors:
         self.dept_details_dept_page.wait_for_eval_rows()
         assert self.dept_form_1 in self.dept_details_dept_page.eval_dept_form(self.share_eval)
         assert self.eval_type_1 in self.dept_details_dept_page.eval_type(self.share_eval)
-        expected = f"{self.share_start_1.strftime('%m/%d/%y')} - {self.share_end_1.strftime('%m/%d/%y')}"
+        expected = f"{self.share_start_1.strftime('%m/%d/%Y')} - {self.share_end_1.strftime('%m/%d/%Y')}"
         assert expected in self.dept_details_dept_page.eval_period_dates(self.share_eval)
         assert 'Conflicts with' not in self.dept_details_dept_page.eval_dept_form(self.share_eval)
         assert 'Conflicts with' not in self.dept_details_dept_page.eval_type(self.share_eval)
@@ -395,7 +395,7 @@ class TestEvalErrors:
         self.dept_details_dept_page.wait_for_eval_rows()
         assert self.dept_form_1 in self.dept_details_dept_page.eval_dept_form(self.share_eval, form=self.dept_form_1)
         assert self.eval_type_1 in self.dept_details_dept_page.eval_type(self.share_eval, form=self.dept_form_1)
-        expected = f"{self.share_start_1.strftime('%m/%d/%y')} - {self.share_end_1.strftime('%m/%d/%y')}"
+        expected = f"{self.share_start_1.strftime('%m/%d/%Y')} - {self.share_end_1.strftime('%m/%d/%Y')}"
         assert expected in self.dept_details_dept_page.eval_period_dates(self.share_eval, form=self.dept_form_1)
         assert 'Conflicts with' not in self.dept_details_dept_page.eval_dept_form(self.share_eval, form=self.dept_form_1)
         assert 'Conflicts with' not in self.dept_details_dept_page.eval_type(self.share_eval, form=self.dept_form_1)
@@ -440,8 +440,8 @@ class TestEvalErrors:
 
     @pytest.mark.skipif(not share, reason='No foreign room shares in course data')
     def test_share_confirmed_dept_2_verify_period_conflict(self):
-        pd_1 = self.share_start_1.strftime('%m/%d/%y')
-        expected = f"{self.share_start_2.strftime('%m/%d/%y')} - {self.share_end_2.strftime('%m/%d/%y')}"
+        pd_1 = self.share_start_1.strftime('%m/%d/%Y')
+        expected = f"{self.share_start_2.strftime('%m/%d/%Y')} - {self.share_end_2.strftime('%m/%d/%Y')}"
         assert expected in self.dept_details_dept_page.eval_period_dates(self.share_eval)
         conflict_date = f'Conflicts with period starting {pd_1} from {self.share_dept_1.name} department'
         assert conflict_date in self.dept_details_dept_page.eval_period_dates(self.share_eval)
@@ -467,8 +467,8 @@ class TestEvalErrors:
 
     @pytest.mark.skipif(not share, reason='No foreign room shares in course data')
     def test_share_confirmed_dept_1_verify_period_conflict(self):
-        pd_2 = self.share_start_2.strftime('%m/%d/%y')
-        expected = f"{self.share_start_1.strftime('%m/%d/%y')} - {self.share_end_1.strftime('%m/%d/%y')}"
+        pd_2 = self.share_start_2.strftime('%m/%d/%Y')
+        expected = f"{self.share_start_1.strftime('%m/%d/%Y')} - {self.share_end_1.strftime('%m/%d/%Y')}"
         assert expected in self.dept_details_dept_page.eval_period_dates(self.share_eval)
         conflict_date = f'Conflicts with period starting {pd_2} from {self.share_dept_2.name} department'
         assert conflict_date in self.dept_details_dept_page.eval_period_dates(self.share_eval)
@@ -497,8 +497,8 @@ class TestEvalErrors:
 
     @pytest.mark.skipif(not share, reason='No foreign room shares in course data')
     def test_share_confirmed_sl_verify_period_conflict(self):
-        pd_1 = self.share_start_1.strftime('%m/%d/%y')
-        expected = f"{self.share_start_2.strftime('%m/%d/%y')} - {self.share_end_2.strftime('%m/%d/%y')}"
+        pd_1 = self.share_start_1.strftime('%m/%d/%Y')
+        expected = f"{self.share_start_2.strftime('%m/%d/%Y')} - {self.share_end_2.strftime('%m/%d/%Y')}"
         assert expected in self.publish_page.eval_period_dates(self.share_eval, self.share_dept_2)
         conflict_date = f'Conflicts with period starting {pd_1} from {self.share_dept_1.name} department'
         assert conflict_date in self.publish_page.eval_period_dates(self.share_eval, self.share_dept_2)

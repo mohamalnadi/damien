@@ -123,21 +123,21 @@ class DamienPages(Page):
 
     @staticmethod
     def add_contact_lookup_result(user):
-        return By.XPATH, f'//div[contains(@id, "-lookup-option")]//span[contains(., "({user.uid})")]'
+        return By.XPATH, f'//div[contains(@id, "-lookup-option") and contains(., "({user.uid})")]'
 
     def look_up_uid(self, uid, input_locator):
         app.logger.info(f'Looking up UID {uid}')
-        self.remove_and_enter_chars(input_locator, uid)
+        self.remove_and_type_chars(input_locator, uid)
 
     def look_up_contact_uid(self, uid):
         self.look_up_uid(uid, DamienPages.ADD_CONTACT_LOOKUP_INPUT)
 
     def look_up_contact_name(self, name):
         app.logger.info(f'Looking up {name}')
-        self.remove_and_enter_chars(DamienPages.ADD_CONTACT_LOOKUP_INPUT, name)
+        self.remove_and_type_chars(DamienPages.ADD_CONTACT_LOOKUP_INPUT, name)
 
     def click_look_up_result(self, user):
-        self.wait_for_page_and_click(self.add_contact_lookup_result(user))
+        self.wait_for_element_and_click(self.add_contact_lookup_result(user))
 
     NOTIF_FORM_BUTTON = (By.ID, 'open-notification-form-btn')
     NOTIF_SUBJ_INPUT = (By.ID, 'input-notification-subject')
@@ -181,11 +181,11 @@ class DamienPages(Page):
 
     def enter_notif_subj(self, subj):
         app.logger.info(f'Entering subject {subj}')
-        self.remove_and_enter_chars(DamienPages.NOTIF_SUBJ_INPUT, subj)
+        self.remove_and_send_chars(DamienPages.NOTIF_SUBJ_INPUT, subj)
 
     def enter_notif_body(self, body):
         app.logger.info(f'Entering body {body}')
-        self.remove_and_enter_chars(DamienPages.NOTIF_BODY_INPUT, body)
+        self.remove_and_send_chars(DamienPages.NOTIF_BODY_INPUT, body)
 
     def click_notif_send(self):
         app.logger.info('Clicking send button')

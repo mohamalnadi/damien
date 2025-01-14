@@ -64,12 +64,12 @@ class DeptDetailsAdminPage(CourseDashboardEditsPage):
 
     @staticmethod
     def dept_contact_form_input(user=None):
-        user_id = user.user_id if user else 'add-contact'
-        return By.ID, f'select-deptForms-{user_id}'
+        user_id = user.uid if user else 'add-contact'
+        return By.ID, f'select-department-forms-{user_id}'
 
     @staticmethod
     def dept_contact_form_option(form):
-        return By.XPATH, f'//div[@class="v-list-item-title"]//span[text()="{form}"]'
+        return By.XPATH, f'//div[@class="v-list-item-title"][text()="{form}"]'
 
     @staticmethod
     def dept_contact_form_remove_button(form):
@@ -84,7 +84,7 @@ class DeptDetailsAdminPage(CourseDashboardEditsPage):
 
     def enter_new_contact_email(self, email):
         app.logger.info(f'Entering email "{email}"')
-        self.remove_and_enter_chars(DeptDetailsAdminPage.ADD_CONTACT_EMAIL, email)
+        self.remove_and_send_chars(DeptDetailsAdminPage.ADD_CONTACT_EMAIL, email)
 
     def clear_dept_form_input(self, user=None):
         if user:
@@ -117,7 +117,7 @@ class DeptDetailsAdminPage(CourseDashboardEditsPage):
 
     def enter_user_flags(self, user, dept):
         role = next(filter(lambda r: (r.dept_id == dept.dept_id), user.dept_roles))
-        checked = True if self.element(DeptDetailsAdminPage.CONTACT_COMMS_CBX).get_attribute('aria-checked') == 'true' else False
+        checked = self.element(DeptDetailsAdminPage.CONTACT_COMMS_CBX).is_selected()
         if (not role.receives_comms and checked) or (role.receives_comms and not checked):
             self.wait_for_page_and_click_js(DeptDetailsAdminPage.CONTACT_COMMS_CBX)
         if user.blue_permissions == BluePerm.NO_BLUE:
@@ -181,7 +181,7 @@ class DeptDetailsAdminPage(CourseDashboardEditsPage):
 
     def enter_dept_contact_email_edit(self, user, email):
         app.logger.info(f'Entering email "{email}" for UID {user.uid}')
-        self.remove_and_enter_chars(DeptDetailsAdminPage.dept_contact_email_edit_input(user), email)
+        self.remove_and_send_chars(DeptDetailsAdminPage.dept_contact_email_edit_input(user), email)
 
     def edit_contact(self, user, dept):
         app.logger.info(f'Editing contact UID {user.uid}')
@@ -209,7 +209,6 @@ class DeptDetailsAdminPage(CourseDashboardEditsPage):
         self.wait_for_element_and_click(DeptDetailsAdminPage.DELETE_CANCEL_BUTTON)
 
     DEPT_NOTE = (By.ID, 'dept-note')
-    DEPT_NOTE_EMPTY = (By.ID, 'dept-note-no-data')
     DEPT_NOTE_EDIT_BUTTON = (By.ID, 'edit-dept-note-btn')
     DEPT_NOTE_TEXTAREA = (By.ID, 'dept-note-textarea')
     DEPT_NOTE_SAVE_BUTTON = (By.ID, 'save-dept-note-btn')
@@ -235,10 +234,9 @@ class DeptDetailsAdminPage(CourseDashboardEditsPage):
         if note:
             self.wait_for_note()
             assert self.element(DeptDetailsAdminPage.DEPT_NOTE).text.strip() == note.strip()
-            assert not self.is_present(DeptDetailsAdminPage.DEPT_NOTE_EMPTY)
         else:
             self.when_not_present(DeptDetailsAdminPage.DEPT_NOTE, utils.get_short_timeout())
-            assert self.is_present(DeptDetailsAdminPage.DEPT_NOTE_EMPTY)
+            assert 'Create' in self.element(self.DEPT_NOTE_EDIT_BUTTON).get_attribute('innerText')
 
     def cxl_dept_note(self):
         app.logger.info('Canceling dept note')
