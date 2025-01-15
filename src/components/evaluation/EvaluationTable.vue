@@ -781,6 +781,9 @@ const customFilter = (value, search, item) => {
       'weeks'
     ].join(' ')
   }
+  if (itemObject.department?.name) {
+    value += ' ' + itemObject.department.name
+  }
   return value.toString().toLocaleLowerCase().indexOf(search.toLocaleLowerCase()) !== -1
 }
 
