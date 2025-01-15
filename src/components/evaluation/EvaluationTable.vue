@@ -768,7 +768,7 @@ const customFilter = (value, search, item) => {
     if (itemObject.crossListedWith) {
       value += (' ' + itemObject.crossListedWith.join(', '))
     }
-    if (item.roomSharedWith) {
+    if (itemObject.roomSharedWith) {
       value += (' ' + itemObject.roomSharedWith.join(', '))
     }
   }
